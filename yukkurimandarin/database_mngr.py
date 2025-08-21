@@ -60,7 +60,7 @@ class DatabaseManager:
         #time_taken = result.get("用时", 0)
         # 打印时间
         current_time = datetime.now()
-        print(f"@ {current_time.strftime("%Y-%m-%d %H:%M:%S")} -- 操作:{operation} {'成功' if success else '失败'}")
+        print(f"@ {current_time.strftime('%Y-%m-%d %H:%M:%S')} -- 操作:{operation} {'成功' if success else '失败'}")
         if data and isinstance(data[0], tuple):
             # 表头
             headers = ["音节", "声调", "平假名"]
