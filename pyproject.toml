@@ -1,0 +1,66 @@
+[project]
+name = "yukkuri-mandarin"
+version = "0.5.2"
+description = "将汉语转换为“伪日本语”."
+keywords = ["mandarin", "普通话", "hiragana", "平仮名"]
+dynamic = ["classifiers"]
+authors = [
+    {name = "wubzbz", email = "wubzbz@126.com" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.9,<4"
+dependencies = ["pypinyin>=0.54.0"]
+
+[project.optional-dependencies]
+excel-export = ["openpyxl>=3.1.5"]
+tokenization = ["jieba>=0.42.1"]
+
+[project.urls]
+Documentation = "https://github.com/Wubzbz/Yukkuri-Mandarin#readme"
+Issues = "https://github.com/Wubzbz/Yukkuri-Mandarin/issues"
+Source = "https://github.com/Wubzbz/Yukkuri-Mandarin"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = "yukkurimandarin"
+testpaths = "tests"
+
+[tool.poetry]
+packages = [
+    { include = "yukkurimandarin" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Natural Language :: Chinese (Simplified)",
+    "Natural Language :: Chinese (Traditional)",
+    "Natural Language :: Japanese",
+    "Topic :: Text Processing",
+    "Topic :: Utilities",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent"
+]
+
+[[tool.poetry.source]]
+name = "aliyun"
+url = "https://mirrors.aliyun.com/pypi/simple/"
+priority = "supplemental"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+
+[tool.poetry.group.excel-export]
+optional = true
+
+[tool.poetry.group.excel-export.dependencies]
+openpyxl = "^3.1.5"
+
+[tool.poetry.group.tokenization]
+optional = true
+
+[tool.poetry.group.tokenization.dependencies]
+jieba = {version = "^0.42.1", source = "aliyun"}
+
