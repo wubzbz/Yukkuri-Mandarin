@@ -1,0 +1,64 @@
+# This workflow will publish distribution to Pypi and Github Release
+# No more information to see.
+
+name: Build and Publish
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ closed ]
+    paths-ignore:
+      - 'docs/**'
+
+jobs:
+  publish:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+        id-token: write
+        contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build package
+        run: python -m build
+
+      #- name: Publish to PyPI
+      #  env:
+      #    TWINE_USERNAME: __token__
+      #    TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      #  run: twine upload dist/*
+
+      - name: Publish to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          id-token: true
+          # 如果存在同名版本，允许跳过
+          skip-existing: true
+
+      - name: Get version from branch name
+        id: get_version
+        run: |
+          echo "VERSION=${{ github.event.pull_request.head.ref }}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
+          name: Release ${{ steps.get_version.outputs.VERSION }}
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
