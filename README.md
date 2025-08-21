@@ -11,7 +11,7 @@
 
 ## 目录
 
-- [安装](#安装)
+- [安装](#安装方法)
 - [License](#license)
 
 ## 安装方法
@@ -50,7 +50,7 @@ pip install yukkuri-mandarin[openpyxl]
 
 1
 
-更详细的[使用方法介绍](/docs/Contents.md)。
+更详细的[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/docs/Contents.md)。
 
 ## 环境与依赖
 
@@ -72,15 +72,23 @@ pip install yukkuri-mandarin[openpyxl]
 
 Q：我遇到了问题/我有一个建议/我需要某个功能
 
-A：请在[issue]()板块提出，或者给作者发邮件：wubzbz@126.com
+A：请在[issue](https://github.com/wubzbz/Yukkuri-Mandarin/issues)板块提出，或者给作者发邮件：wubzbz@126.com
 
 ## 更新日志
 
-### 0.5.0: 2025/07/29
+### 0.5.4(Test Pypi)
+
+- 
+
+### 0.5.3(Test Pypi)
+
+2025/08/22
+
+- 定义了CI/CD工作流。
 
 
 
-查看更多[更新日志](/docs/CHANGELOG.md)。
+查看更多[更新日志](https://github.com/wubzbz/Yukkuri-Mandarin/docs/CHANGELOG.md)。
 
 ## 许可证
 
