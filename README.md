@@ -24,7 +24,7 @@
 pip install yukkuri-mandarin
 ```
 
-**（推荐）** 安装所有可选依赖项：
+:star: **（推荐）** 安装所有可选依赖项：
 
 ```console
 pip install yukkuri-mandarin[jieba, openpyxl]
@@ -42,7 +42,7 @@ pip install yukkuri-mandarin[jieba]
 pip install yukkuri-mandarin[openpyxl]
 ```
 
-如果要从本地安装/给无法联网的设备安装/从源码编译安装，请看[更多安装方式]()。
+如果要从本地安装/给无法联网的设备安装/从源码编译安装，请看[更多安装方式](https://github.com/wubzbz/Yukkuri-Mandarin/docs/installation.md)。
 
 
 
