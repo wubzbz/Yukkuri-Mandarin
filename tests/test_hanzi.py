@@ -39,4 +39,4 @@ def test_tokenize(input, expected):
     ["測試unexpected的非漢字輸入", "比如枠", "還有молоко"],
 ])
 def test_hanzi(input):
-    t.hanzi_process(input, None)
+    t.hanzi_process(input, None, None)
