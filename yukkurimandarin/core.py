@@ -5,10 +5,12 @@ from yukkurimandarin.pre_process import pre_process
 from yukkurimandarin.hanzi_process import hanzi_process
 from yukkurimandarin.non_hanzi_process import non_hanzi_process
 from yukkurimandarin.settings import NonHanziModes
+from yukkurimandarin.database_mngr import DatabaseManager
 
 
 def text_convert(sentence: str, 
                  tokenizer: Union[Tokenizer, None] = None, 
+                 pinyin_database: Union[DatabaseManager, None] = None,
                  non_hanzi_config: Union[NonHanziModes, None] = None) -> str:
     """
     将中文句子中的汉字转换为伪日本语，非汉字字符保持原样
@@ -16,10 +18,18 @@ def text_convert(sentence: str,
     Args:
         sentence: 输入的句子
         tokenizer: jiaba分词器
+        pinyin_database: 拼音数据库管理类
         non_hanzi_config: 非汉字处理模式
     
     Returns:
         转换后的句子
+    
+    Usage:
+
+      >>> import yukkurimandarin as ym
+      >>> result = ym.text_convert("油库里普通话。")
+      >>> print(result)
+
     """
     # 参数类型检查
     if not isinstance(sentence, str):
@@ -32,7 +42,7 @@ def text_convert(sentence: str,
     # 切分
     hanzi, non_hanzi, last_type = divide(sentence)
     # 分别处理汉字片段和非汉字片段
-    res_hanzi = hanzi_process(hanzi, tokenizer)
+    res_hanzi = hanzi_process(hanzi, tokenizer, pinyin_database)
     res_non_hanzi = non_hanzi_process(non_hanzi, non_hanzi_config)
     # 还原
     result = combine(res_hanzi, res_non_hanzi, last_type)
@@ -49,6 +59,8 @@ def divide(sentence: str) -> Tuple[List[str], List[str], bool]:
     Returns:
         (hanzi, non_hanzi, last_type): 汉字片段、非汉字片段，以及最后一个片段的类型
     """
+    if not sentence:
+        return ([], [], False)
     # 初始化变量
     hanzi: List[str] = []
     non_hanzi: List[str] = []
@@ -91,6 +103,8 @@ def combine(res_hanzi: List[str], res_non_hanzi: List[str], last_type: bool) -> 
     Returns:
         合并后的句子
     """
+    if not res_hanzi and not res_non_hanzi:
+        return ""
     len_hanzi = len(res_hanzi)
     len_non_hanzi = len(res_non_hanzi)
     result = []
@@ -133,3 +147,25 @@ def is_hanzi(fragment: str) -> bool:
         if not 0x4E00 <= ord(char) <= 0x9FFF:
             return False
     return True
+
+
+def pinyin_convert(sentence: str,
+                   pinyin_database: Union[DatabaseManager, None] = None) -> str:
+    """
+    将拼音转换为伪日本语
+    
+    Args:
+        sentence: 输入的拼音（以空格分开）
+        pinyin_database: 拼音数据库管理类
+    
+    Returns:
+        转换后的句子
+    
+    Usage:
+
+      >>> import yukkurimandarin as ym
+      >>> result = ym.pinyin_convert("you2 ku4 li3 pu3 tong1 hua4 。")
+      >>> print(result)
+
+    """
+    return ""

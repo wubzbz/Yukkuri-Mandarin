@@ -14,13 +14,14 @@ except ImportError:
     _HAS_JIEBA = False
 
 
-def hanzi_process(fragments: List[str], tokenizer: Optional["jieba.Tokenizer"]) -> List[str]:
+def hanzi_process(fragments: List[str], tokenizer: Optional["jieba.Tokenizer"], db_mngr: Optional[DatabaseManager]) -> List[str]:
     """
     处理汉字片段
 
     Args:
         fragments: 汉字片段
         tokenizer: jieba分词器
+        db_mngr: 拼音数据库管理类
 
     Returns:
         处理结果
@@ -44,8 +45,9 @@ def hanzi_process(fragments: List[str], tokenizer: Optional["jieba.Tokenizer"]) 
     for i in range(1, len(pinyin_list)-1):
         serial.append((pinyin_list[i][0][:-1], f"{pinyin_list[i-1][0][-1]}{pinyin_list[i][0][-1]}{pinyin_list[i+1][0][-1]}"))
     # 查询假名拟音
-    dm = DatabaseManager()
-    hiragana_list = dm.serial_search(serial, "")
+    if db_mngr is None:
+        db_mngr = DatabaseManager()
+    hiragana_list = db_mngr.serial_search(serial, "")
     # 还原fragments结构
     result = []
     frag = []
@@ -64,7 +66,7 @@ def hanzi_process(fragments: List[str], tokenizer: Optional["jieba.Tokenizer"]) 
     return result
 
 
-def tokenize(fragments: List[str], tokenizer, mark: str = "/0") -> List[str]:
+def tokenize(fragments: List[str], tokenizer: Optional["jieba.Tokenizer"], mark: str = "/0") -> List[str]:
     """使用jieba对片段列表进行分词
     
     Args:
@@ -77,7 +79,7 @@ def tokenize(fragments: List[str], tokenizer, mark: str = "/0") -> List[str]:
     """
     if not _HAS_JIEBA:
         return fragments
-    if not tokenizer:
+    if tokenizer is None:
         tokenizer = Tokenizer()
     # 遍历列表中的每个句子，对每个句子进行分词
     result: List[str] = []

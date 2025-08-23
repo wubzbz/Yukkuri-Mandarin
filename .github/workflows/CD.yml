@@ -45,7 +45,6 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
-          id-token: true
           # 如果存在同名版本，允许跳过
           skip-existing: true
 
@@ -59,7 +58,9 @@ jobs:
         with:
           tag_name: v${{ steps.get_version.outputs.VERSION }}
           name: Release ${{ steps.get_version.outputs.VERSION }}
+          body: 详情请见[更新日志](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/CHANGELOG.md)。
           files: dist/*
+          overwrite: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
