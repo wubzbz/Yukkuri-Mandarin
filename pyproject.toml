@@ -1,6 +1,6 @@
 [project]
 name = "yukkuri-mandarin"
-version = "0.5.4"
+version = "0.6.0"
 description = "将汉语转换为“伪日本语”."
 keywords = ["mandarin", "普通话", "hiragana", "平仮名"]
 dynamic = ["classifiers"]
