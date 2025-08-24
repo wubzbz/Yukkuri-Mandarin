@@ -2,6 +2,7 @@
 
 from typing import Union, Callable
 
+
 class NonHanziModes:
     """
     设置如何处理各类非汉字字符

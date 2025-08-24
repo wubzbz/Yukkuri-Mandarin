@@ -1,6 +1,6 @@
 [project]
 name = "yukkuri-mandarin"
-version = "0.6.0"
+version = "0.6.1"
 description = "将汉语转换为“伪日本语”."
 keywords = ["mandarin", "普通话", "hiragana", "平仮名"]
 dynamic = ["classifiers"]
@@ -17,6 +17,7 @@ excel-export = ["openpyxl>=3.1.5"]
 tokenization = ["jieba>=0.42.1"]
 
 [project.urls]
+Homepage = "https://github.com/wubzbz/Yukkuri-Mandarin"
 Documentation = "https://github.com/wubzbz/Yukkuri-Mandarin#readme"
 Issues = "https://github.com/wubzbz/Yukkuri-Mandarin/issues"
 Source = "https://github.com/wubzbz/Yukkuri-Mandarin"

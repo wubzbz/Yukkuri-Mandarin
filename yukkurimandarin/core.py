@@ -1,5 +1,4 @@
-from typing import Union, Tuple, List
-from jieba import Tokenizer
+from typing import Optional, Tuple, List, Any
 
 from yukkurimandarin.pre_process import pre_process
 from yukkurimandarin.hanzi_process import hanzi_process
@@ -8,12 +7,18 @@ from yukkurimandarin.settings import NonHanziModes
 from yukkurimandarin.database_mngr import DatabaseManager
 from yukkurimandarin.post_process import post_process
 
+# 可选组件
+try:
+    from jieba import Tokenizer
+except ImportError:
+    pass
+
 
 def text_convert(sentence: str, 
                  without_accent: bool = False,
-                 tokenizer: Union[Tokenizer, None] = None, 
-                 pinyin_database: Union[DatabaseManager, None] = None,
-                 non_hanzi_config: Union[NonHanziModes, None] = None) -> str:
+                 tokenizer: Optional["Tokenizer"] = None, 
+                 pinyin_database: Optional[DatabaseManager] = None,
+                 non_hanzi_config: Optional[NonHanziModes] = None) -> str:
     """
     将中文句子中的汉字转换为伪日本语，非汉字字符保持原样
     
@@ -157,7 +162,7 @@ def is_hanzi(fragment: str) -> bool:
 def pinyin_convert(sentence: str,
                    error: str = "",
                    without_accent: bool = False,
-                   pinyin_database: Union[DatabaseManager, None] = None) -> str:
+                   pinyin_database: Optional[DatabaseManager] = None) -> str:
     """
     将拼音转换为伪日本语
     

@@ -1,12 +1,13 @@
 # 处理非汉字片段。
 
-from typing import List, Union, Callable
+from typing import List, Union, Callable, Optional
 import string
 import unicodedata
 
 from yukkurimandarin.settings import NonHanziModes
 
-def non_hanzi_process(fragments: List[str], config: Union[NonHanziModes, None] = None) -> List[str]:
+
+def non_hanzi_process(fragments: List[str], config: Optional[NonHanziModes] = None) -> List[str]:
     """
     处理非汉字片段
 
