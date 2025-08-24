@@ -36,3 +36,11 @@ def test_text_convert():
         t.text_convert(invalid_input) # type: ignore
     empty_input = ""
     assert t.text_convert(empty_input) == empty_input
+
+
+@pytest.mark.parametrize("input, expected", [
+    ("", ""),
+    (", . ; ? invalid invalid1 ", "、。,?@@"),
+])
+def test_pinyin_convert(input, expected):
+    assert t.pinyin_convert(input, "@") == expected

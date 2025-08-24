@@ -8,7 +8,7 @@ import yukkurimandarin.non_hanzi_process as t
     ("あをぁアヲァｱｦ", "gana"),
     ("azAZ", "latin"),
     ("!！,，、;；:：~-—…－·.｡。()（）[]【】「」『』?？", "punctuation"),
-    ("Бβ一1", "others")
+    ("Бβ一1", "others"),
 ])
 def test_classify(input, expected):
     for char in input:
@@ -19,7 +19,7 @@ def test_classify(input, expected):
     ("ignore", ""),
     ("keep", "char"),
     ("replace", "w"),
-    (lambda c: c.upper(), "CHAR")
+    (lambda c: c.upper(), "CHAR"),
 ])
 def test_mode_handler(input, expected):
     assert t.mode_handler("char", input, "w") == expected
@@ -29,17 +29,29 @@ def test_mode_handler(input, expected):
     ("ignore", ""),
     ("keep", "！。（？#,.】?@"),
     ("replace", "w"),
-    (t.clean_punctuation, "、。,?、。,?")
+    (t.clean_punctuation, "、。,?、。,?"),
 ])
 def test_punctuation_convert(input, expected):
     assert t.punctuation_convert("！。（？#,.】?@", input, "w") == expected
+
+
+@pytest.mark.parametrize("input, expected", [
+    ("", ""),
+    ("ヴ", "ゔ"),
+    ("ｳﾞ", "ゔ"),
+    ("コンニチハー", "こんにちはー"),
+    ("ﾁｭｳｺﾞｸ", "ちゅうごく"),
+    ("イナバテヰ", "いなばてゐ"),
+])
+def test_normalize_gana(input, expected):
+    assert t.normalize_gana(input) == expected
 
 
 @pytest.mark.parametrize("input, expected, mode", [
     ([], [], "default"),
     ([""], [""], "default"),
     (["モデル&", "@しての", "、readme", "ください。", ") "], 
-     ["", "", "、", "。", ","], "default"),
+     ["もでる", "しての", "、", "ください。", ","], "default"),
     (["モデル&", "@しての", "、readme", "ください。", ") "], 
      ["モデル&", "@しての", "、readme", "ください。", ") "], "keep"),
     (["モデル&", "@しての"], ["", ""], "ignore"),
