@@ -7,29 +7,29 @@
 
 在终端输入如下命令将安装yukkuri-mandarin包以及两个可选依赖包，获得最完整的体验：
 
-```console
+```bash
 pip install yukkuri-mandarin[jieba, openpyxl]
 ```
 
 如果因为某种原因不能安装可选依赖包，您可通过以下方式安装：
 
-```console
+```bash
 pip install yukkuri-mandarin
 ```
 
 或者仅安装一个可选依赖包：
 
-```console
+```bash
 pip install yukkuri-mandarin[jieba]
 ```
 
-```console
+```bash
 pip install yukkuri-mandarin[openpyxl]
 ```
 
 如果您是想升级，请运行以下命令：
 
-```console
+```bash
 pip install --upgrade yukkuri-mandarin
 ```
 

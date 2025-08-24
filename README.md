@@ -35,25 +35,25 @@
 
 :star: **（推荐）** 安装所有可选依赖项：
 
-```console
+```bash
 pip install yukkuri-mandarin[jieba, openpyxl]
 ```
 
 不带可选依赖项：
 
-```console
+```bash
 pip install yukkuri-mandarin
 ```
 
 使用可选依赖项 `jieba` 进行分词可以提高多音字读音准确性：
 
-```console
+```bash
 pip install yukkuri-mandarin[jieba]
 ```
 
 如果要使用导出/导入Excel文档的功能，请安装可选依赖项 `openpyxl` ：
 
-```console
+```bash
 pip install yukkuri-mandarin[openpyxl]
 ```
 
