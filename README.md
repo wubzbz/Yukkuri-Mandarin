@@ -112,7 +112,7 @@ A: 请使用[拼音数据库管理](https://github.com/wubzbz/Yukkuri-Mandarin/b
 
 #### Q: 为什么无法生成油库里语音？
 
-A: 请首先检查转换后的假名拟音中是否包含非法字符。具体请查看[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/Contents.md)。
+A: 请首先检查转换后的假名拟音中是否包含非法字符。具体请查看[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/Contents.md/#注意事项)。
 
 #### Q: 我遇到了问题/我有一个建议/我需要某个功能
 
