@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Type Checked](https://img.shields.io/badge/types-checked-green.svg)](https://mypy.readthedocs.io/)
 
-<img width="1280" height="640" alt="题图" src="https://github.com/user-attachments/assets/af08aba0-132e-4b5a-bf7e-84870096b660" />
+<img width="1280" height="640" alt="欢迎来到油库里普通话！" src="https://github.com/user-attachments/assets/836f84ec-d0ba-4373-93e1-1318e44273dd" />
 
 -----
 
