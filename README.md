@@ -1,16 +1,16 @@
 # Yukkuri-Mandarin: 油库里普通话
 
-<!--[![PyPI - Version](https://img.shields.io/pypi/v/yukkuri-mandarin.svg)](https://test.pypi.org/project/yukkuri-mandarin)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/yukkuri-mandarin.svg)](https://test.pypi.org/project/yukkuri-mandarin)-->
+<!--[![PyPI - Version](https://img.shields.io/pypi/v/yukkuri-mandarin.svg)](https://pypi.org/project/yukkuri-mandarin)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/yukkuri-mandarin.svg)](https://pypi.org/project/yukkuri-mandarin)-->
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Type Checked](https://img.shields.io/badge/types-checked-green.svg)](https://mypy.readthedocs.io/)
 
 <img width="1280" height="640" alt="欢迎来到油库里普通话！" src="https://github.com/user-attachments/assets/836f84ec-d0ba-4373-93e1-1318e44273dd" />
 
------
+---
 
-油库里普通话（Yukkuri-Mandarin）是一个尝试使用日语的假名（五十音）系统来模拟拼读现代汉语普通话的Python包。
+[油库里普通话](https://pypi.org/project/yukkuri-mandarin/)（Yukkuri-Mandarin）是一个尝试使用日语的假名（五十音）系统来模拟拼读现代汉语普通话的Python包。
 
 “伪中国语”（偽中国語 / ぎちゅうごくご）是一种基于日语逻辑，但不使用日语中的假名，仅通过汉字来构建句子的语言游戏形式。反过来，仅使用日语假名来拼读普通话发音形成的“句子”或可称之为“伪日本语”。例如“油库里普通话”，使用平假名模拟其**音节**将是“よう　くう　りい　ぷう　とん　ふわ”。同时，基于日语高低音模式模拟普通话**声调**，得到类似“ <ins>よ</ins>/̅う̅く̅\\<ins>うりいぷう</ins>/̅と̅ん̅ふ̅\\<ins>わ</ins>”的结果。
 
@@ -26,7 +26,7 @@
 - [环境与依赖](#环境与依赖)
 - [常见问题](#常见问题)
 - [更新日志](#更新日志)
-- [许可证](#license)
+- [附注](#附注)
 
 
 ## 安装方法
@@ -60,7 +60,23 @@ pip install yukkuri-mandarin[openpyxl]
 
 ## 使用方法
 
-1
+将中文句子转换为“伪日本语”：
+
+```python
+import yukkurimandarin as ym
+
+result = ym.text_convert("油库里普通话。")
+print(result)
+```
+
+将汉语拼音句子（以**空格**分开音节，各音节末尾添加表示声调的数字）转换为“伪日本语”：
+
+```python
+import yukkurimandarin as ym
+
+result = ym.pinyin_convert("you2 ku4 li3 pu3 tong1 hua4 .")
+print(result)
+```
 
 请查看更详细的[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/Contents.md)。
 
@@ -79,38 +95,39 @@ pip install yukkuri-mandarin[openpyxl]
     
     - [openpyxl](https://pypi.org/project/openpyxl/) 3.1.5 及以上。
 
-谨在此向上述包的开发者们表达感谢！ :smile:
+谨在此向上述包的开发者们表达感谢！
 
 
 ## 常见问题
 
-Q: 我需要有日语基础吗？
+#### Q: 我需要有日语基础吗？
 
 A: **不需要。** 但是如果您掌握了假名发音将帮助您调整您不满意的发音数据。
 
-Q: 某个音读错了/缺少某个音/我想修改某个音
+#### Q: 某个音读错了/缺少某个音/我想修改某个音
 
 A: 请使用[拼音数据库管理](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/database-mngr.md)模块。
 
-Q：我遇到了问题/我有一个建议/我需要某个功能
+#### Q: 为什么无法生成油库里语音？
 
-A：请在[issue](https://github.com/wubzbz/Yukkuri-Mandarin/issues)板块提出，或者给作者发邮件：wubzbz@126.com
+A: 请首先检查转换后的假名拟音中是否包含非法字符。具体请查看[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/Contents.md/#注意事项)。
+
+#### Q: 我遇到了问题/我有一个建议/我需要某个功能
+
+A: 请在[issue](https://github.com/wubzbz/Yukkuri-Mandarin/issues)板块提出，或者给作者发邮件：wubzbz@126.com
 
 
 ## 更新日志
 
-### 0.6.0(Test Pypi)
+### 0.6.1(Test Pypi)
 
-2025/08/24
-
-- 添加了拼音序列转换功能。
-- 添加了去除音声记号选项。
-- 添加了片假名转换平假名函数。
-- 完成了单元测试。
+- 修复了在core直接引入jieba的问题。
 
 查看更多[更新日志](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/CHANGELOG.md)。
 
 
-## 许可证
+## 附注
 
-[`yukkurimandarin`](https://pypi.org/project/yukkuri-mandarin/) is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
+- 作者在制作题图时使用了人工智能辅助。
+- 题图中的人物“雾雨魔理沙”形象的原作者为：©上海アリス幻樂団。
+- [`yukkurimandarin`](https://pypi.org/project/yukkuri-mandarin/) is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.

@@ -70,7 +70,7 @@ tar -xzf mypack-x.x.x.tar.gz
 cd mypack-x.x.x
 ```
 
-2. 使用pip进行安装（推荐，跨平台兼容）：
+2. 使用pip进行安装：
 ```bash
 pip install .
 ```
@@ -85,8 +85,8 @@ python setup.py install
 ### 克隆仓库到本地
 
 ```bash
-git clone https://github.com/yourusername/mypack.git
-cd mypack
+git clone https://github.com/wubzbz/Yukkuri-Mandarin.git
+cd Yukkuri-Mandarin
 ```
 
 ### 安装依赖项

@@ -1,7 +1,7 @@
 # 数据库管理操作。
 
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import csv
 from datetime import datetime
 
@@ -23,8 +23,11 @@ class DatabaseManager:
     DEFAULT_XLSX_PATH = DEFAULT_FILE_DIR / "yinjie_table.xlsx"
     DEFAULT_CSV_PATH = DEFAULT_FILE_DIR / "yinjie_table.csv"
 
-    def __init__(self, db_path: Path = Database.DEFAULT_DB_PATH):
-        self.db_path = db_path # lazy initialization
+    def __init__(self, db_path: Optional[str] = None):
+        if db_path is None:
+            self.db_path = Database.DEFAULT_DB_PATH
+        else:
+            self.db_path = Path(db_path) # lazy initialization
 
 
     def _get_width(self, s: str) -> int:

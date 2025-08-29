@@ -20,6 +20,9 @@
 
 /'_
 
+### 参考资料
+
+- [AquesTalk音声記号列仕様書](https://www.a-quest.com/archive/manual/siyo_onseikigou.pdf)
 
 ## 单韵母的处理
 
