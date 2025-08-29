@@ -7,6 +7,10 @@
 - [拼音转换](#拼音转换)
 
 
+> [!IMPORTANT]
+> 油库里普通话的PyPI项目名是`yukkuri-mandarin`，在`pip install`时请使用这个名称；
+> 而Python包名是`yukkurimandarin`（中间没有连字符），在`import`的时候请使用这个名称。
+
 ## 文字转换
 
 ### 基础用法
