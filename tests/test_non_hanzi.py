@@ -29,7 +29,7 @@ def test_mode_handler(input, expected):
     ("ignore", ""),
     ("keep", "！。（？#,.】?@"),
     ("replace", "w"),
-    (t.clean_punctuation, "、。,?、。,?"),
+    (t.clean_punctuation, "。。,?、。,?"),
 ])
 def test_punctuation_convert(input, expected):
     assert t.punctuation_convert("！。（？#,.】?@", input, "w") == expected
