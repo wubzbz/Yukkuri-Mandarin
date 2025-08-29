@@ -22,8 +22,8 @@ class NonHanziModes:
                  global_replace: str = "",
                  en_mode: Union[str, Callable[[str], str], None] = None,
                  en_replace: Union[str, None] = None,
-                 jp_mode: Union[str, Callable[[str], str], None] = None,
-                 jp_replace: Union[str, None] = None,
+                 ja_mode: Union[str, Callable[[str], str], None] = None,
+                 ja_replace: Union[str, None] = None,
                  pc_mode: Union[str, Callable[[str], str], None] = None,
                  pc_replace: Union[str, None] = None,
                  other_mode: Union[str, Callable[[str], str], None] = None,
@@ -31,8 +31,8 @@ class NonHanziModes:
         
         self.en_mode = en_mode if en_mode is not None else global_mode
         self.en_replace = en_replace if en_replace is not None else global_replace
-        self.jp_mode = jp_mode if jp_mode is not None else global_mode
-        self.jp_replace = jp_replace if jp_replace is not None else global_replace
+        self.ja_mode = ja_mode if ja_mode is not None else global_mode
+        self.ja_replace = ja_replace if ja_replace is not None else global_replace
         self.pc_mode = pc_mode if pc_mode is not None else global_mode
         self.pc_replace = pc_replace if pc_replace is not None else global_replace
         self.other_mode = other_mode if other_mode is not None else global_mode

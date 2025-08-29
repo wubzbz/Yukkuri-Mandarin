@@ -8,8 +8,6 @@
 
 
 
-题图。
-
 -----
 
 [油库里普通话](https://pypi.org/project/yukkuri-mandarin/)（Yukkuri-Mandarin）是一个尝试使用日语的假名（五十音）系统来模拟拼读现代汉语普通话的Python包。
@@ -28,7 +26,7 @@
 - [环境与依赖](#环境与依赖)
 - [常见问题](#常见问题)
 - [更新日志](#更新日志)
-- [许可证](#license)
+- [附注](#附注)
 
 
 ## 安装方法
@@ -121,18 +119,15 @@ A: 请在[issue](https://github.com/wubzbz/Yukkuri-Mandarin/issues)板块提出�
 
 ## 更新日志
 
-### 0.6.0(Test Pypi)
+### 0.6.1(Test Pypi)
 
-2025/08/24
-
-- 添加了拼音序列转换功能。
-- 添加了去除音声记号选项。
-- 添加了片假名转换平假名函数。
-- 完成了单元测试。
+- 修复了在core直接引入jieba的问题。
 
 查看更多[更新日志](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/CHANGELOG.md)。
 
 
-## 许可证
+## 附注
 
-[`yukkurimandarin`](https://pypi.org/project/yukkuri-mandarin/) is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
+- 作者在制作题图时使用了人工智能辅助。
+- 题图中的人物“雾雨魔理沙”形象的原作者为：©上海アリス幻樂団。
+- [`yukkurimandarin`](https://pypi.org/project/yukkuri-mandarin/) is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.

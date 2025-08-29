@@ -21,7 +21,7 @@ def non_hanzi_process(fragments: List[str], config: Optional[NonHanziModes] = No
     if not fragments:
         return []
     if config is None: # 如果用户未定义处理模式设置，使用默认设置模式
-        config = NonHanziModes(pc_mode=clean_punctuation, jp_mode=normalize_gana)
+        config = NonHanziModes(pc_mode=clean_punctuation, ja_mode=normalize_gana)
     result = []
     for fragment in fragments:
         if not fragment:
@@ -118,7 +118,7 @@ def convertor_handler(fragment: str, type: str, config: NonHanziModes) -> str:
     if type == "punctuation":
         return punctuation_convert(fragment, config.pc_mode, config.pc_replace)
     elif type == "gana":
-        return gana_convert(fragment, config.jp_mode, config.jp_replace)
+        return gana_convert(fragment, config.ja_mode, config.ja_replace)
     elif type =="latin":
         return latin_convert(fragment, config.en_mode, config.en_replace)
     elif type == "others":
@@ -144,8 +144,8 @@ def clean_punctuation(fragment: str) -> str:
     if not fragment:
         return ""
     # 常见标点符号
-    normal_stop = "!！,，、;；:：~-—…－·"
-    full_stop = ".｡。" # 小数点在预处理部分处理过了
+    normal_stop = ",，、;；:：~-—…－·"
+    full_stop = ".｡。!！" # 小数点在预处理部分处理过了
     weak_stop = "()（）[]【】「」『』"
     question_mark = "?？"
     
