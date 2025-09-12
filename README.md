@@ -1,7 +1,6 @@
 # Yukkuri-Mandarin: 油库里普通话
 
-<!--[![PyPI - Version](https://img.shields.io/pypi/v/yukkuri-mandarin.svg)](https://pypi.org/project/yukkuri-mandarin)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/yukkuri-mandarin.svg)](https://pypi.org/project/yukkuri-mandarin)-->
+[![PyPI - Version](https://img.shields.io/pypi/v/yukkuri-mandarin.svg)](https://pypi.org/project/yukkuri-mandarin)
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Type Checked](https://img.shields.io/badge/types-checked-green.svg)](https://mypy.readthedocs.io/)
