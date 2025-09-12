@@ -71,7 +71,7 @@ def text_convert(sentence: str,
                  without_accent: bool = False,
                  tokenizer: Optional["Tokenizer"] = None, 
                  pinyin_database: Optional[DatabaseManager] = None,
-                 non_hanzi_config: Optional[NonHanziModes] = None) -> str:
+                 non_hanzi_config: Optional[NonHanziModes] = None) -> str
 ```
 
 #### `sentence`: 待转换的汉字句子（字符串）
@@ -249,7 +249,7 @@ print(result)
 def pinyin_convert(sentence: str,
                    error: str = "",
                    without_accent: bool = False,
-                   pinyin_database: Optional[DatabaseManager] = None) -> str:
+                   pinyin_database: Optional[DatabaseManager] = None) -> str
 ```
 
 #### `sentence`: 待转换的拼音句子（字符串）

@@ -119,7 +119,7 @@ class DatabaseManager:
             if report:
                 result = {"操作": "增加拼音数据",
                         "结果": False,
-                        "信息": [f"发生错误：声调格式错误{tone}"]}
+                        "信息": [f"发生错误：声调 {tone} 格式错误！"]}
                 self._report_result(result)
             return False
         try:
@@ -156,7 +156,7 @@ class DatabaseManager:
             if report:
                 result = {"操作": "查询拼音数据",
                         "结果": False,
-                        "信息": [f"发生错误：声调格式错误{tone}"]}
+                        "信息": [f"发生错误：声调 {tone} 格式错误！"]}
                 self._report_result(result)
             return []
         try:
@@ -229,7 +229,7 @@ class DatabaseManager:
             if report:
                 result = {"操作": "删除拼音数据",
                         "结果": False,
-                        "信息": [f"发生错误：声调格式错误{tone}"]}
+                        "信息": [f"发生错误：声调 {tone} 格式错误！"]}
                 self._report_result(result)
             return False
         try:
@@ -264,7 +264,7 @@ class DatabaseManager:
             return False
 
 
-    def export_to_csv(self, file_path: Path = DEFAULT_CSV_PATH, report: bool = True) -> bool:
+    def export_to_csv(self, file_path: Optional[str] = None, report: bool = True) -> bool:
         """导出数据到csv文件
             
         Args:
@@ -274,10 +274,14 @@ class DatabaseManager:
         Returns:
             操作是否成功
         """
+        if file_path is None:
+            filepath = self.DEFAULT_CSV_PATH
+        else:
+            filepath = Path(file_path)
         try:
             # 检查路径
-            if file_path.suffix.lower() != ".csv":
-                file_path.with_suffix(".csv")
+            if filepath.suffix.lower() != ".csv":
+                filepath.with_suffix(".csv")
             # 添加表头
             rows = [("拼音", "声调", "平假名")]
             # 获取所有数据
@@ -287,13 +291,13 @@ class DatabaseManager:
             # 填充数据
             rows += data
             # 保存文件
-            with open(file_path, mode="w", newline="", encoding="utf-8-sig") as file:
+            with open(filepath, mode="w", newline="", encoding="utf-8-sig") as file:
                 writer = csv.writer(file)
                 writer.writerows(rows)
             if report:
                 result = {"操作": "导出拼音数据库到csv",
                         "结果": True,
-                        "信息": [f"成功导出到{file_path}"]}
+                        "信息": [f"成功导出到{filepath}"]}
                 self._report_result(result)
             return True
         except Exception as e:
@@ -305,7 +309,7 @@ class DatabaseManager:
             return False
 
 
-    def import_from_csv(self, file_path: Path = DEFAULT_CSV_PATH, report: bool = True) -> bool:
+    def import_from_csv(self, file_path: Optional[str] = None, report: bool = True) -> bool:
         """从csv文件导入数据
             
         Args:
@@ -315,9 +319,13 @@ class DatabaseManager:
         Returns:
             操作是否成功
         """
+        if file_path is None:
+            filepath = self.DEFAULT_CSV_PATH
+        else:
+            filepath = Path(file_path)
         try:
             # 检查路径
-            if file_path.suffix.lower() != ".csv":
+            if filepath.suffix.lower() != ".csv":
                 if report:
                     result = {"操作": "从csv导入拼音数据库",
                             "结果": False,
@@ -327,7 +335,7 @@ class DatabaseManager:
             # 读取数据
             rows = []
             errors = []
-            with open(file_path, "r", newline="", encoding="utf-8-sig") as csvfile:
+            with open(filepath, "r", newline="", encoding="utf-8-sig") as csvfile:
                 reader = csv.reader(csvfile)
                 # 验证每行是否包含3列
                 for row_num, row in enumerate(reader, start=1):
@@ -391,7 +399,7 @@ class DatabaseManager:
             return False
 
 
-    def export_to_excel(self, file_path: Path = DEFAULT_XLSX_PATH, report: bool = True) -> bool:
+    def export_to_excel(self, file_path: Optional[str] = None, report: bool = True) -> bool:
         """导出数据到Excel文件
             
         Args:
@@ -408,10 +416,14 @@ class DatabaseManager:
                         "信息": ["未安装openpyxl，该功能不可用。\n请尝试通过 pip install openpyxl 进行安装。 或使用fill_csv方法代替。"]}
                 self._report_result(result)
             return False
+        if file_path is None:
+            filepath = self.DEFAULT_XLSX_PATH
+        else:
+            filepath = Path(file_path)
         try:
             # 检查路径
-            if file_path.suffix.lower() != ".xlsx":
-                file_path.with_suffix(".xlsx")
+            if filepath.suffix.lower() != ".xlsx":
+                filepath.with_suffix(".xlsx")
             # 创建工作簿和工作表
             workbook = openpyxl.Workbook()
             worksheet = workbook.active
@@ -434,11 +446,11 @@ class DatabaseManager:
                 worksheet[f"B{row_idx}"] = tone
                 worksheet[f"C{row_idx}"] = hiragana
             # 保存文件
-            workbook.save(file_path)
+            workbook.save(filepath)
             if report:
                 result = {"操作": "导出拼音数据库到excel表格",
                         "结果": True,
-                        "信息": [f"成功导出到{file_path}"]}
+                        "信息": [f"成功导出到{filepath}"]}
                 self._report_result(result)
             return True
         except Exception as e:
@@ -450,7 +462,7 @@ class DatabaseManager:
             return False
         
 
-    def import_from_excel(self, file_path: Path = DEFAULT_XLSX_PATH, report: bool = True) -> bool:
+    def import_from_excel(self, file_path: Optional[str] = None, report: bool = True) -> bool:
         """从Excel文件导入数据
             
         Args:
@@ -467,9 +479,13 @@ class DatabaseManager:
                         "信息": ["未安装openpyxl，该功能不可用。\n请尝试通过 pip install openpyxl 进行安装。 或使用fill_csv方法代替。"]}
                 self._report_result(result)
             return False
+        if file_path is None:
+            filepath = self.DEFAULT_XLSX_PATH
+        else:
+            filepath = Path(file_path)
         try:
             # 检查路径
-            if file_path.suffix.lower() != ".xlsx":
+            if filepath.suffix.lower() != ".xlsx":
                 if report:
                     result = {"操作": "从excel表格导入拼音数据库",
                             "结果": False,
@@ -477,7 +493,7 @@ class DatabaseManager:
                     self._report_result(result)
                 return False
             # 打开工作簿
-            workbook = openpyxl.load_workbook(file_path)
+            workbook = openpyxl.load_workbook(filepath)
             worksheet = workbook.active
             if not worksheet:
                 if report:

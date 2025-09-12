@@ -34,7 +34,7 @@
 :star: **（推荐）** 安装所有可选依赖项：
 
 ```bash
-pip install yukkuri-mandarin[jieba, openpyxl]
+pip install yukkuri-mandarin[all]
 ```
 
 不带可选依赖项：
@@ -119,11 +119,9 @@ A: 请在[issue](https://github.com/wubzbz/Yukkuri-Mandarin/issues)板块提出�
 
 ## 更新日志
 
-### 0.6.1(Test Pypi)
+### 0.1.0
 
-- 修复了在core直接引入jieba的问题。
-
-查看更多[更新日志](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/CHANGELOG.md)。
+- 将CD工作流迁移到PyPI。
 
 
 ## 附注

@@ -35,11 +35,18 @@ jobs:
       - name: Build package
         run: python -m build
 
-      #- name: Publish to PyPI
+      #- name: Publish to PyPI via token
       #  env:
       #    TWINE_USERNAME: __token__
       #    TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       #  run: twine upload dist/*
+
+      #- name: Publish to PyPI
+      #  uses: pypa/gh-action-pypi-publish@release/v1
+      #  with:
+      #    repository-url: https://upload.pypi.org/legacy/
+      #    # 如果存在同名版本，允许跳过
+      #    skip-existing: true
 
       - name: Publish to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
