@@ -223,10 +223,11 @@ files = [
 ]
 
 [extras]
-excel-export = ["openpyxl"]
-tokenization = ["jieba"]
+all = ["jieba", "openpyxl"]
+jieba = ["jieba"]
+openpyxl = ["openpyxl"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4"
-content-hash = "d66503cc8331d1b9c4ba13e7cef601d508bce823c9d26ee9a89156b26cf32427"
+content-hash = "30255c368e58e97fc3181c3cea84c4ecc75df4c9e486ef999adb6a712b5c6775"

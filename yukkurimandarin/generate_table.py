@@ -3,7 +3,7 @@
 
 from pathlib import Path
 import csv
-from typing import List
+from typing import List, Optional
 
 from yukkurimandarin.generate_gana import generate_hiragana, YINJIE
 
@@ -15,11 +15,13 @@ except ImportError:
     _HAS_OPENPYXL = False
 
 
-def fill_xlsx(file_path: str = "gr_yinjie_table.xlsx") -> None:
+def fill_xlsx(file_path: Optional[str] = None) -> None:
     """利用统一规则填充可供数据库导入的excel工作表。"""
     if not _HAS_OPENPYXL:
         print("未安装openpyxl，该功能不可用。\n请尝试通过 pip install openpyxl 进行安装。 或使用fill_csv方法代替。")
         return
+    if file_path is None:
+        file_path = "gr_yinjie_table.xlsx"
     try:
         filepath = Path(file_path)
         # 检查后缀
@@ -60,8 +62,10 @@ def fill_xlsx(file_path: str = "gr_yinjie_table.xlsx") -> None:
         print(f"发生错误：{e}")
 
 
-def fill_csv(file_path: str = "gr_yinjie_table.csv") -> None:
+def fill_csv(file_path: Optional[str] = None) -> None:
     """利用统一规则填充可供数据库导入的csv文档。"""
+    if file_path is None:
+        file_path = "gr_yinjie_table.csv"
     try:
         filepath = Path(file_path)
         # 检查后缀

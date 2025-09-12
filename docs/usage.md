@@ -1,15 +1,19 @@
 # 油库里普通话功能详解
 
 
-## 目录
+## 0. 目录
 
-- [文字转换](#文字转换)
-- [拼音转换](#拼音转换)
+- [文字转换](#1-文字转换)
+- [拼音转换](#2-拼音转换)
 
 
-## 文字转换
+> [!IMPORTANT]
+> 油库里普通话的PyPI项目名是`yukkuri-mandarin`，在`pip install`时请使用这个名称；
+> 而Python包名是`yukkurimandarin`（中间没有连字符），在`import`的时候请使用这个名称。
 
-### 基础用法
+## 1. 文字转换
+
+### 1.1 基础用法
 
 文字转换功能将中文句子转换为“伪日本语”。示例：
 
@@ -56,7 +60,7 @@ print(f"#>{result}") # 使用f-字符串为伪日本语的开头添加#>
 - 如果您使用的语音生成工具对音声记号的定义与本项目采用的不一致，您可以选择[自建拼音数据库](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/database-mngr.md)。
 - 有时候会出现无法生成语音的情况。请首先检查生成的“伪日本语”中是否包含语音转换工具不支持的字符。例如，一些终端在输出结果时，会自动为行末的半角字符位补一个**空格**以满足行宽。如果您采用复制终端输出的方法，请检查是否包含这种多余的空格。考虑到这种情况，更建议您采用将结果输出到文件中再复制的方式。
 
-### 高级用法
+### 1.2 高级用法
 
 ![原理图（深色）](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/Asset/UML-d.png#gh-dark-mode-only)
 
@@ -67,7 +71,7 @@ def text_convert(sentence: str,
                  without_accent: bool = False,
                  tokenizer: Optional["Tokenizer"] = None, 
                  pinyin_database: Optional[DatabaseManager] = None,
-                 non_hanzi_config: Optional[NonHanziModes] = None) -> str:
+                 non_hanzi_config: Optional[NonHanziModes] = None) -> str
 ```
 
 #### `sentence`: 待转换的汉字句子（字符串）
@@ -206,16 +210,60 @@ print(result)
 > 如果保持参数`non_hanzi_config`为其默认值`None`，则`text_convert`对非汉字字符的处理模式为：对标点符号使用内置函数处理转化为音声记号，日语假名则统一转化为平假名。如果您对此感兴趣，请查阅源代码[non_hanzi_process.py](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/yukkurimandarin/non_hanzi_process.py)。
 
 
-## 拼音转换
+## 2. 拼音转换
 
-### 基础用法
+### 2.1 基础用法
 
 拼音转换允许将以空格分开的拼音序列转换为“伪日本语”。
 
-使用拼音转换函数可以让您更自由地掌握音节和音调，这在某些需要特殊发音的场景特别有效。您甚至可以通过数据库管理模块添加特殊发音，实现无对应汉字的音节转换（例如`giao`）。
+使用拼音转换函数可以让您更自由地掌握音节和音调，这在某些需要特殊发音的场景特别有效。您甚至可以通过[数据库管理模块](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/database-mngr.md)添加特殊发音，实现无对应汉字的音节转换（例如`giao`）。
 
-但另一方面，您的输入需要严格遵守拼音序列的格式——以空格分割各个拼音、使用音节+数字声调的格式表示拼音。
+但另一方面，您的输入需要严格遵守拼音序列的格式：
 
-### 高级用法
+- 以空格分割各个拼音、标点。
+- 使用音节+数字声调的格式表示拼音。数字1表示阴平（第一声），数字2表示阳平（第二声），数字3表示上声（第三声），数字4表示去声（第四声），数字5表示轻声。
+- 标点符号只有4种——①英文逗号`,`表示句中停顿；②英文句号`.`表示句末停顿；③英文问号`?`表示疑问语气；④英文分号`;`表示句中短暂停顿。
 
+例如，“油库里（慢速）普通话是什么？嗯，好问题。”应写作“you2 ku4 li3 ; man4 su4 ; pu3 tong1 hua4 shi4 shen3 me5 ? en4 , hao3 wen4 ti2 .”
 
+鉴于拼音序列的语法要求比较严格，建议您指定参数`error`，以便检查哪些部分未能成功转换。如下例：
+
+```python
+import yukkurimandarin as ym
+
+result = ym.pinyin_convert("ya1 ha1 ha1 ha ha1 ,ji1 tang1 lai2 lo5 .", error="@")
+print(result)
+```
+
+在这个例子中，输入的拼音序列存在两个问题：第四个拼音“ha”未标注声调，且逗号和拼音“ji1”之间没有用空格分开。输出的结果应类似：
+
+```
+/っやあはあはあ@/っはあ@たあん/らいろお。
+```
+
+可见，出错的部分出现了我们指定的符号`@`。通过这种方式，您可以快速排除潜在的问题。
+
+### 2.2 高级用法
+
+```python
+def pinyin_convert(sentence: str,
+                   error: str = "",
+                   without_accent: bool = False,
+                   pinyin_database: Optional[DatabaseManager] = None) -> str
+```
+
+#### `sentence`: 待转换的拼音句子（字符串）
+
+参阅[基础用法](#21-基础用法)。
+
+#### `error`: 无法转换时的占位符（字符串）
+
+参阅[基础用法](#21-基础用法)。
+
+#### `without_accent`: 是否去除音声记号（布尔）
+
+此参数的效果等同于`text_convert`中的[同名参数](#without_accent-是否去除音声记号布尔)。
+
+#### `pinyin_database`: 拼音数据库
+
+此参数的效果等同于`text_convert`中的[同名参数](#pinyin_database-拼音数据库)。

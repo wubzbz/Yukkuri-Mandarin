@@ -34,7 +34,7 @@
 :star: **（推荐）** 安装所有可选依赖项：
 
 ```bash
-pip install yukkuri-mandarin[jieba, openpyxl]
+pip install yukkuri-mandarin[all]
 ```
 
 不带可选依赖项：
@@ -78,7 +78,7 @@ result = ym.pinyin_convert("you2 ku4 li3 pu3 tong1 hua4 .")
 print(result)
 ```
 
-请查看更详细的[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/Contents.md)。
+请查看更详细的[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md)。
 
 
 ## 环境与依赖
@@ -110,7 +110,7 @@ A: 请使用[拼音数据库管理](https://github.com/wubzbz/Yukkuri-Mandarin/b
 
 #### Q: 为什么无法生成油库里语音？
 
-A: 请首先检查转换后的假名拟音中是否包含非法字符。具体请查看[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/Contents.md/#注意事项)。
+A: 请首先检查转换后的假名拟音中是否包含非法字符。具体请查看[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md/#注意事项)。
 
 #### Q: 我遇到了问题/我有一个建议/我需要某个功能
 
@@ -119,11 +119,9 @@ A: 请在[issue](https://github.com/wubzbz/Yukkuri-Mandarin/issues)板块提出�
 
 ## 更新日志
 
-### 0.6.1(Test Pypi)
+### 0.1.0
 
-- 修复了在core直接引入jieba的问题。
-
-查看更多[更新日志](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/CHANGELOG.md)。
+- 将CD工作流迁移到PyPI。
 
 
 ## 附注

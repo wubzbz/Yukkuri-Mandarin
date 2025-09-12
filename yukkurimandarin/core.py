@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, List, Any
+from typing import Optional, Tuple, List
 
 from yukkurimandarin.pre_process import pre_process
 from yukkurimandarin.hanzi_process import hanzi_process
