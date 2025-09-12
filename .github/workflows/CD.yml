@@ -14,6 +14,9 @@ jobs:
   publish:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/yukkuri-mandarin
     permissions:
         id-token: write
         contents: write
@@ -41,19 +44,19 @@ jobs:
       #    TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       #  run: twine upload dist/*
 
-      #- name: Publish to PyPI
-      #  uses: pypa/gh-action-pypi-publish@release/v1
-      #  with:
-      #    repository-url: https://upload.pypi.org/legacy/
-      #    # 如果存在同名版本，允许跳过
-      #    skip-existing: true
-
-      - name: Publish to Test PyPI
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository-url: https://test.pypi.org/legacy/
+          # repository-url: https://upload.pypi.org/legacy/
           # 如果存在同名版本，允许跳过
           skip-existing: true
+
+      #- name: Publish to Test PyPI
+      #  uses: pypa/gh-action-pypi-publish@release/v1
+      #  with:
+      #    repository-url: https://test.pypi.org/legacy/
+      #    # 如果存在同名版本，允许跳过
+      #    skip-existing: true
 
       - name: Get version from branch name
         id: get_version
