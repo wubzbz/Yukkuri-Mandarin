@@ -36,10 +36,12 @@ def hanzi_process(fragments: List[str], tokenizer: Optional["jieba.Tokenizer"], 
         marked_frag.append(mark)
     # 分词
     marked_frag = tokenize(marked_frag, tokenizer=tokenizer, mark=mark)
+    #print(marked_frag)
     # 拼音化
     pinyin_list = pinyin(marked_frag, style=Style.TONE3, neutral_tone_with_five=True)
     # 处理连续上声
     modify_consecutive_threes(pinyin_list)
+    #print(pinyin_list)
     # 构造拼音序列
     serial: List[Tuple[str, str]] = []
     for i in range(1, len(pinyin_list)-1):
