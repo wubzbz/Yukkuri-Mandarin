@@ -13,7 +13,7 @@
 
 “伪中国语”（偽中国語 / ぎちゅうごくご）是一种基于日语逻辑，但不使用日语中的假名，仅通过汉字来构建句子的语言游戏形式。反过来，仅使用日语假名来拼读普通话发音形成的“句子”或可称之为“伪日本语”。例如“油库里普通话”，使用平假名模拟其**音节**将是“よう　くう　りい　ぷう　とん　ふわ”。同时，基于日语高低音模式模拟普通话**声调**，得到类似“ <ins>よ</ins>/̅う̅く̅\\<ins>うりいぷう</ins>/̅と̅ん̅ふ̅\\<ins>わ</ins>”的结果。
 
-目前，现有的普通话->假名转换工具大部分仅能实现[音节](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#基本概念)的模拟，而不能还原[声调](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#基本概念)。如果直接利用其输出的结果生成[油库里语音](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#什么是油库里语音)将得到类似“棒读”的机械发音。本项目在实现这些功能的基础上，借助语音合成软件的“[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#什么是音声记号)”，在输出结果中标记高低音形成声调拟音，使发音更加接近普通话。您可以将转换结果用于[AquesTalkPlayer](https://www.a-quest.com/products/aquestalkplayer.html)、[油库里MovieMaker](https://manjubox.net/ymm4/)和其他支持音声记号的语音合成工具，以实现中文油库里语音的合成。此外，本项目还提供了拼音数据库管理功能，如果您对某个字的发音不满意，或者某些生僻字缺少发音，您可以方便地自定义发音数据。祝您玩得愉快~
+目前，现有的普通话->假名转换工具大部分仅能实现[音节](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#1-基本概念)的模拟，而不能还原[声调](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#1-基本概念)。如果直接利用其输出的结果生成[油库里语音](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#2-什么是油库里语音)将得到类似“棒读”的机械发音。本项目在实现这些功能的基础上，借助语音合成软件的“[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#3-什么是音声记号)”，在输出结果中标记高低音形成声调拟音，使发音更加接近普通话。您可以将转换结果用于[AquesTalkPlayer](https://www.a-quest.com/products/aquestalkplayer.html)、[油库里MovieMaker](https://manjubox.net/ymm4/)和其他支持音声记号的语音合成工具，以实现中文油库里语音的合成。此外，本项目还提供了拼音数据库管理功能，如果您对某个字的发音不满意，或者某些生僻字缺少发音，您可以方便地自定义发音数据。祝您玩得愉快~
 
 > 让我们说中文！
 
