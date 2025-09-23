@@ -118,7 +118,7 @@ A: 请在[issue](https://github.com/wubzbz/Yukkuri-Mandarin/issues)板块提出�
 
 ## 更新日志
 
-### 0.1.0
+### 1.0.1
 
 - 将CD工作流迁移到PyPI。
 

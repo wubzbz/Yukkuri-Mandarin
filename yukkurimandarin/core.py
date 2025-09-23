@@ -25,7 +25,7 @@ def text_convert(sentence: str,
     Args:
         sentence: 输入的句子
         without_accent: 是否去除音声记号
-        tokenizer: jiaba分词器
+        tokenizer: jieba分词器
         pinyin_database: 拼音数据库管理类
         non_hanzi_config: 非汉字处理模式
     
