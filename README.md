@@ -4,6 +4,7 @@
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Type Checked](https://img.shields.io/badge/types-checked-green.svg)](https://mypy.readthedocs.io/)
+[![OS Independent](https://img.shields.io/badge/OS-independent-green.svg)](https://mypy.readthedocs.io/)
 
 <img width="1280" height="640" alt="欢迎来到油库里普通话！" src="https://github.com/user-attachments/assets/836f84ec-d0ba-4373-93e1-1318e44273dd" />
 
@@ -120,7 +121,7 @@ A: 请在[issue](https://github.com/wubzbz/Yukkuri-Mandarin/issues)板块提出�
 
 ### 1.0.1
 
-- 将CD工作流迁移到PyPI。
+- 改正了错别字。
 
 
 ## 附注
