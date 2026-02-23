@@ -73,7 +73,7 @@ jobs:
           files: |
             dist/*.whl
             dist/*.tar.gz
-          prerelease: true
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
