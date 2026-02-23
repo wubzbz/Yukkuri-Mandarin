@@ -1,5 +1,6 @@
 # 处理汉字片段。
 
+import logging
 from typing import List, Tuple, Optional
 from pypinyin import pinyin, Style
 
@@ -9,7 +10,11 @@ from yukkurimandarin.database_mngr import DatabaseManager
 try:
     import jieba
     from jieba import Tokenizer
+
+    jieba.setLogLevel(logging.WARNING)
+    
     _HAS_JIEBA = True
+    _DEFAULT_TOKENIZER = Tokenizer()
 except ImportError:
     _HAS_JIEBA = False
 
@@ -82,7 +87,7 @@ def tokenize(fragments: List[str], tokenizer: Optional["jieba.Tokenizer"], mark:
     if not _HAS_JIEBA:
         return fragments
     if tokenizer is None:
-        tokenizer = Tokenizer()
+        tokenizer = _DEFAULT_TOKENIZER
     # 遍历列表中的每个句子，对每个句子进行分词
     result: List[str] = []
     for fragment in fragments:
