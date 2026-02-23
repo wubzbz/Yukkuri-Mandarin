@@ -2,6 +2,8 @@
 
 import yukkurimandarin as ym
 
+ym.fill_xlsx()
+
 dm = ym.DatabaseManager()
 
-dm.search_by_pinyin("zi", "*5*")
+dm.import_from_excel("gr_yinjie_table.xlsx")
