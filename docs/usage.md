@@ -54,7 +54,18 @@ print(f"#>{result}") # 使用f-字符串为伪日本语的开头添加#>
 
 ![图片不见了咯](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/Asset/eg-aquestalk.png)
 
-#### 三、注意事项
+#### 三、在[ゆっくも！](https://www.yukumo.net/)中使用
+
+首先点击网页顶部的"Pro"，切换到Pro模式。此时会出现一左一右两个文本框，如下图所示：
+
+![图片不见了咯](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/Asset/eg-yukumo.png)
+
+将转换后的发音粘贴到**右侧**的“発音記号”文本框中，即可播放和下载音频。
+
+> [!NOTE]
+> Yukumo支持的AquesTalk音声记号版本是1.7，而本项目是基于2.0版开发的。如果您在使用过程中发现问题，请向本项目提交[Issue](https://github.com/wubzbz/Yukkuri-Mandarin/issues)。
+
+#### 四、注意事项
 
 - 如果您使用上述语音生成软件以外的生成工具，请确认其是否支持音声记号。如果不支持，可以设置`text_convert`的参数`without_accent`为`True`，以获得不含音声记号的结果。
 - 如果您使用的语音生成工具对音声记号的定义与本项目采用的不一致，您可以选择[自建拼音数据库](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/database-mngr.md)。
