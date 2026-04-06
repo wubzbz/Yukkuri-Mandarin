@@ -67,7 +67,7 @@ print(f"#>{result}") # 使用f-字符串为伪日本语的开头添加#>
 
 #### 四、注意事项
 
-- 如果您使用上述语音生成软件以外的生成工具，请确认其是否支持音声记号。如果不支持，可以设置`text_convert`的参数`without_accent`为`True`，以获得不含音声记号的结果。
+- 如果您使用上述语音生成软件以外的生成工具，请确认其是否支持[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#3-什么是音声记号)。如果不支持，可以设置`text_convert`的参数`without_accent`为`True`，以获得不含音声记号的结果。
 - 如果您使用的语音生成工具对音声记号的定义与本项目采用的不一致，您可以选择[自建拼音数据库](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/database-mngr.md)。
 - 有时候会出现无法生成语音的情况。请首先检查生成的“伪日本语”中是否包含语音转换工具不支持的字符。例如，一些终端在输出结果时，会自动为行末的半角字符位补一个**空格**以满足行宽。如果您采用复制终端输出的方法，请检查是否包含这种多余的空格。考虑到这种情况，更建议您采用将结果输出到文件中再复制的方式。
 

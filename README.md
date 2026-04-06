@@ -108,9 +108,13 @@ A: **不需要。** 但是如果您掌握了假名发音将帮助您调整您不
 
 A: 请使用[拼音数据库管理](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/database-mngr.md)模块。
 
+#### Q: 发音没有声调，而且断断续续？
+
+A: 请先阅读[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md)。同时，确认您使用的语音合成软件是否支持[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#3-什么是音声记号)。
+
 #### Q: 为什么无法生成油库里语音？
 
-A: 请首先检查转换后的假名拟音中是否包含非法字符。具体请查看[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md/#注意事项)。
+A: 请首先检查转换后的假名拟音中是否包含非法字符。具体请查看[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md/#三注意事项)。
 
 #### Q: 我遇到了问题/我有一个建议/我需要某个功能
 
