@@ -67,7 +67,7 @@ print(f"#>{result}") # 使用f-字符串为伪日本语的开头添加#>
 
 #### 四、注意事项
 
-- 如果您使用上述语音生成软件以外的生成工具，请确认其是否支持[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#3-什么是音声记号)。如果不支持，可以设置`text_convert`的参数`without_accent`为`True`，以获得不含音声记号的结果。
+- 如果您使用上述语音生成软件以外的生成工具，请确认其是否支持[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#3-什么是音声记号)。如果不支持，可以设置`text_convert()`的参数`without_accent`为`True`，以获得不含音声记号的结果。
 - 如果您使用的语音生成工具对音声记号的定义与本项目采用的不一致，您可以选择[自建拼音数据库](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/database-mngr.md)。
 - 有时候会出现无法生成语音的情况。请首先检查生成的“伪日本语”中是否包含语音转换工具不支持的字符。例如，一些终端在输出结果时，会自动为行末的半角字符位补一个**空格**以满足行宽。如果您采用复制终端输出的方法，请检查是否包含这种多余的空格。考虑到这种情况，更建议您采用将结果输出到文件中再复制的方式。
 
@@ -133,6 +133,9 @@ print(result)
 ```
 
 更详细的用法介绍请查阅[jieba文档](https://github.com/fxsjy/jieba)。
+
+> [!TIP] 如果安装了`jieba`，且未提供`tokenizer`参数，首次调用`text_convert()`时会初始化默认`jieba`分词器，耗时0.3~0.4s。因此，如果您有多次处理的需求，建议您在程序生命周期内复用`text_convert()`方法；或者自行创建并长期持有分词器实例作为`tokenizer`参数传入`text_convert()`，避免多次冷启动带来的性能损耗。
+
 
 #### `pinyin_database`: 拼音数据库
 
