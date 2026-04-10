@@ -96,7 +96,6 @@ def tokenize(fragments: List[str], tokenizer: Optional["jieba.Tokenizer"], mark:
         return fragments
     if tokenizer is None:
         tokenizer = _DEFAULT_TOKENIZER
-        print("initialize tokenizer!")
     # 遍历列表中的每个句子，对每个句子进行分词
     result: List[str] = []
     for fragment in fragments:
