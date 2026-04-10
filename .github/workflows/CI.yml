@@ -4,11 +4,6 @@
 name: Package Test
 
 on:
-  push:
-    branches: [ "main" ]
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
   pull_request:
     branches: [ "main" ]
     paths-ignore:
