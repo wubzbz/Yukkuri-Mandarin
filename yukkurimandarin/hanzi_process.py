@@ -103,7 +103,6 @@ def tokenize(fragments: List[str], tokenizer: Optional["jieba.Tokenizer"], mark:
             result.append(mark)
         else:
             result.extend(tokenizer.lcut(fragment)) 
-    
     return result
 
 
@@ -155,6 +154,8 @@ def modify_bu_tone(pinyin_list: List[List[str]], extended_marked_frag: List[str]
     - 此函数直接修改传入的列表
     - `extended_marked_frag` 为只读参数，展开后的片段列表
     """
+    if len(pinyin_list) < 2:
+        return
     # 遍历的索引
     i = 0
     for i in range(len(pinyin_list)-1):
@@ -163,3 +164,4 @@ def modify_bu_tone(pinyin_list: List[List[str]], extended_marked_frag: List[str]
             and pinyin_list[i][0] == "bu4"
             and pinyin_list[i+1][0][-1] == "4"):
             pinyin_list[i][0] = "bu2"
+    return
