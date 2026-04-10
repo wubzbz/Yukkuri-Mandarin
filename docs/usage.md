@@ -134,7 +134,8 @@ print(result)
 
 更详细的用法介绍请查阅[jieba文档](https://github.com/fxsjy/jieba)。
 
-> [!TIP] 如果安装了`jieba`，且未提供`tokenizer`参数，首次调用`text_convert()`时会初始化默认`jieba`分词器，耗时0.3~0.4s。因此，如果您有多次处理的需求，建议您在程序生命周期内复用`text_convert()`方法；或者自行创建并长期持有分词器实例作为`tokenizer`参数传入`text_convert()`，避免多次冷启动带来的性能损耗。
+> [!TIP] 
+> 如果安装了`jieba`，且未提供`tokenizer`参数，首次调用`text_convert()`时会初始化默认`jieba`分词器，耗时0.3~0.4s。因此，如果您有多次处理的需求，建议您在程序生命周期内复用`text_convert()`方法；或者自行创建并长期持有分词器实例作为`tokenizer`参数传入`text_convert()`，避免多次冷启动带来的性能损耗。
 
 
 #### `pinyin_database`: 拼音数据库
