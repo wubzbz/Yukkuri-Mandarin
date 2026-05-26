@@ -1,4 +1,4 @@
-# Yukkuri-Mandarin: 油库里普通话
+# 🍊Yukkuri-Mandarin：油库里普通话
 
 [![PyPI - Version](https://img.shields.io/pypi/v/yukkuri-mandarin.svg)](https://pypi.org/project/yukkuri-mandarin)
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
