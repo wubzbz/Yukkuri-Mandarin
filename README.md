@@ -18,6 +18,9 @@
 
 > 让我们说中文！
 
+> [!TIP]
+> 👉了解[Re-Hatsuon Tool](https://github.com/wubzbz/ReHatsuonTool)，一款使用油库里普通话（本项目）向[油库里MovieMaker4](https://manjubox.net/ymm4/)工程项目添加普通话语音物件的软件！<br>
+> ![demo](./docs/Asset/re-hatsuon.png)
 
 ## 目录
 

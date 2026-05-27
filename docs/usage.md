@@ -38,6 +38,9 @@ print(result)
 
 首先在时间轴选中语音物件，将生成的“伪日本语”粘贴到右侧物件编辑面板—“语音”—“发音”文本框中。**请注意是“发音”文本框**而不是“台词”文本框。然后点击右侧的播放按钮，确认生成的语音是否符合要求。
 
+> [!TIP]
+> 推荐使用[Re-Hatsuon Tool](https://github.com/wubzbz/ReHatsuonTool)软件向YukkuriMovieMaker4项目添加普通话语音物件。它具有直观的图形界面，简便的操作方法和完善的台词编辑能力。
+
 
 #### 二、在[AquesTalkPlayer](https://www.a-quest.com/products/aquestalkplayer.html)中使用
 
@@ -65,7 +68,21 @@ print(f"#>{result}") # 使用f-字符串为伪日本语的开头添加#>
 > [!NOTE]
 > Yukumo支持的AquesTalk音声记号版本是1.7，而本项目是基于2.0版开发的。如果您在使用过程中发现问题，请向本项目提交[Issue](https://github.com/wubzbz/Yukkuri-Mandarin/issues)。
 
-#### 四、注意事项
+#### 四、在[VoiceVox](https://voicevox.hiroshiba.jp/)中使用
+
+> [!NOTE]
+> 此特性有可能在1.1版实装。
+
+基本思路：根据分词确定断/合，五度标记法构造声调。
+
+TODO:
+
+- [] 移除音声记号、片假名注音（最易）
+- [] 声调-音高映射
+- [] 无声化、重音核
+- [] 声韵长度、抑扬、其他参数
+
+#### 五、注意事项
 
 - 如果您使用上述语音生成软件以外的生成工具，请确认其是否支持[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#3-什么是音声记号)。如果不支持，可以设置`text_convert()`的参数`without_accent`为`True`，以获得不含音声记号的结果。
 - 如果您使用的语音生成工具对音声记号的定义与本项目采用的不一致，您可以选择[自建拼音数据库](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/database-mngr.md)。
