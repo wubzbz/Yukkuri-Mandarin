@@ -34,6 +34,13 @@ def test_invalid_tone_format(tone):
         t.render_hiragana("a", tone)
 
 
+def test_invalid_tone_checked_before_early_returns():
+    with pytest.raises(ValueError):
+        t.render_hiragana("a", "abc", without_accent=True)
+    with pytest.raises(ValueError):
+        t.render_hiragana("unknown", "abc")
+
+
 @pytest.mark.parametrize("tone", valid_tones())
 def test_without_accent(tone):
     hiragana = t.render_hiragana("a", tone, without_accent=True)

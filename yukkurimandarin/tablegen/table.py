@@ -12,10 +12,8 @@ from pathlib import Path
 from typing import Any, Iterator, List, Optional, Tuple, Union
 
 from ..errors import MissingDependencyError
+from ..formats import CSV_HEADERS
 from .render import render_hiragana, syllables
-
-#: 表格文件表头，与数据库导入格式一致
-_HEADERS = ("拼音", "声调", "平假名")
 
 _DEFAULT_CSV = "gr_yinjie_table.csv"
 _DEFAULT_XLSX = "gr_yinjie_table.xlsx"
@@ -61,7 +59,7 @@ def fill_csv(file_path: Optional[Union[str, Path]] = None) -> int:
     count = 0
     with target.open("w", encoding="utf-8-sig", newline="") as handle:
         writer = csv.writer(handle)
-        writer.writerow(_HEADERS)
+        writer.writerow(CSV_HEADERS)
         for row in iter_rows():
             writer.writerow(row)
             count += 1
@@ -84,7 +82,7 @@ def fill_xlsx(file_path: Optional[Union[str, Path]] = None) -> int:
     target = _resolve(file_path, _DEFAULT_XLSX, ".xlsx")
     workbook = openpyxl.Workbook()
     sheet = workbook.active
-    sheet.append(list(_HEADERS))
+    sheet.append(list(CSV_HEADERS))
     count = 0
     for row in iter_rows():
         sheet.append(list(row))

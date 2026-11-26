@@ -10,7 +10,7 @@ import logging
 import threading
 from typing import TYPE_CHECKING, Optional
 
-from .db import PinyinRepository
+from .db import PinyinRepository, SchemaError
 from .phonology.pinyin import build_serial
 from .phonology.sandhi import apply as apply_sandhi
 from .pipeline import assemble, fill_kana, fill_pinyin, finalize, normalize_text
@@ -62,9 +62,21 @@ class Converter:
 
     @property
     def repository(self) -> PinyinRepository:
-        """拼音数据库仓储；首次访问时打开。"""
+        """拼音数据库仓储；首次访问时打开。
+
+        内置库始终只读；自定义库优先只读打开，若 schema 落后则先迁移一次。
+        """
         if self._repository is None:
-            self._repository = PinyinRepository.open(self._config.database)
+            path = self._config.database
+            if path is None:
+                self._repository = PinyinRepository.open()
+            else:
+                try:
+                    self._repository = PinyinRepository.open(path, readonly=True)
+                except SchemaError:
+                    with PinyinRepository.open(path):
+                        pass
+                    self._repository = PinyinRepository.open(path, readonly=True)
         return self._repository
 
     def close(self) -> None:
@@ -114,8 +126,9 @@ class Converter:
         """将拼音序列转换为伪日本语。
 
         Args:
-            sentence: 以空格分隔的拼音，音节末尾带 0–5 的声调数字。
-            error: 查询无结果时的返回值。
+            sentence: 以空格分隔的拼音，音节末尾带 0–5 的声调数字
+                （0 视作轻声）。
+            error: 查询无结果时的返回值；传 ``"keep"`` 时保留原音节。
             without_accent: 是否去除音声记号。
 
         Returns:
@@ -137,6 +150,8 @@ class Converter:
                 parts.append(_PUNCTUATION.get(syllable, error))
             elif entry is not None:
                 parts.append(entry.hiragana)
+            elif error == "keep":
+                parts.append(syllable)
             else:
                 parts.append(error)
         return finalize("".join(parts), without_accent=without_accent)
@@ -193,7 +208,9 @@ def _parse_pinyin_tokens(sentence: str) -> list[tuple[str, int]]:
     tokens: list[tuple[str, int]] = []
     for token in sentence.split():
         if token and token[-1] in "012345":
-            tokens.append((token[:-1], int(token[-1])))
+            tone = int(token[-1])
+            # 输入里的 0 视作轻声 5；真正的标点 token 没有声调数字
+            tokens.append((token[:-1], 5 if tone == 0 else tone))
         else:
             tokens.append((token, 0))
     return tokens

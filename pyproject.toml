@@ -50,5 +50,5 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-pythonpath = "yukkurimandarin"
+pythonpath = "."
 testpaths = "tests"

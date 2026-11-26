@@ -3,6 +3,8 @@ import csv
 import pytest
 
 from yukkurimandarin.db import read_table
+from yukkurimandarin.db.transfer import CSV_HEADERS as DB_HEADERS
+from yukkurimandarin.formats import CSV_HEADERS
 from yukkurimandarin.tablegen import render, table
 
 
@@ -27,7 +29,8 @@ def test_fill_csv_absolute(tmp_path):
     assert target.exists()
     with target.open("r", encoding="utf-8-sig", newline="") as handle:
         rows = list(csv.reader(handle))
-    assert rows[0] == ["拼音", "声调", "平假名"]
+    assert rows[0] == list(CSV_HEADERS)
+    assert CSV_HEADERS == DB_HEADERS
     assert len(rows) == count + 1
     assert len(read_table(target)) == count
 

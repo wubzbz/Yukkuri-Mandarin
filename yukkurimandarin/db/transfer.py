@@ -11,11 +11,9 @@ import csv
 from pathlib import Path
 from typing import Any, Iterable, List, Union
 
+from ..formats import CSV_HEADERS
 from .errors import MissingDependencyError, TransferError
 from .models import PinyinEntry
-
-#: 表格文件的表头，顺序与 PinyinEntry 字段一致
-CSV_HEADERS = ("拼音", "声调", "平假名")
 
 #: 读取时也接受“音节”作为第一列名（旧文档两种叫法都出现过）
 _ACCEPTED_HEADERS = {

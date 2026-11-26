@@ -4,3 +4,4 @@ __pycache__
 *.old
 *.db-wal
 *.db-shm
+/yinjie_database.db

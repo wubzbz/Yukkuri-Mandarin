@@ -169,6 +169,13 @@ def test_search_invalid_pattern(db_path):
                 repo.search("ni", pattern)
 
 
+def test_is_bundled_path(db_path):
+    from yukkurimandarin.db.connection import is_bundled_path
+
+    assert is_bundled_path(BUNDLED_DB_PATH)
+    assert not is_bundled_path(db_path)
+
+
 def test_create_uses_delete_journal(db_path):
     conn = sqlite3.connect(db_path)
     try:

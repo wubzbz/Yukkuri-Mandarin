@@ -10,6 +10,8 @@ if TYPE_CHECKING:
     from ..chars import CharType
     from ..settings import NonHanziModes
 
+_DEFAULT_CONFIG: Optional["NonHanziModes"] = None
+
 
 def convert_run(
     text: str, kind: "CharType", config: Optional["NonHanziModes"] = None
@@ -39,10 +41,15 @@ def convert_run(
 
 
 def default_config() -> "NonHanziModes":
-    """返回非汉字处理的默认配置。"""
-    from ..settings import NonHanziModes
+    """返回非汉字处理的默认配置（模块内缓存）。"""
+    global _DEFAULT_CONFIG
+    if _DEFAULT_CONFIG is None:
+        from ..settings import NonHanziModes
 
-    return NonHanziModes(pc_mode=clean_punctuation, ja_mode=normalize_kana)
+        _DEFAULT_CONFIG = NonHanziModes(
+            pc_mode=clean_punctuation, ja_mode=normalize_kana
+        )
+    return _DEFAULT_CONFIG
 
 
 def clean_punctuation(fragment: str) -> str:

@@ -454,11 +454,6 @@ def render_hiragana(yinjie: str, tone: str, *, without_accent: bool = False) -> 
     """
     if not isinstance(yinjie, str):
         raise ValueError("参数类型错误！必须是字符串。")
-    gana = _SYLLABLES.get(yinjie)
-    if not gana:
-        return ""
-    if without_accent:
-        return f"{gana[0]}{gana[1]}"
     if not isinstance(tone, str) or len(tone) != 3:
         raise ValueError(f"声调必须是3位数字组成的字符串: {tone}.")
     last_tone, this_tone, next_tone = tone
@@ -468,6 +463,11 @@ def render_hiragana(yinjie: str, tone: str, *, without_accent: bool = False) -> 
         or next_tone not in "012345"
     ):
         raise ValueError(f"声调格式错误: {tone}.")
+    gana = _SYLLABLES.get(yinjie)
+    if not gana:
+        return ""
+    if without_accent:
+        return f"{gana[0]}{gana[1]}"
     return _apply_accent(gana, last_tone, this_tone, next_tone)
 
 

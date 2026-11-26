@@ -1,3 +1,5 @@
+import sqlite3
+
 import pytest
 
 from yukkurimandarin import Config, Converter, pinyin_convert, text_convert
@@ -90,3 +92,44 @@ def test_text_convert_non_hanzi_skips_resources(monkeypatch, tmp_path):
     assert text_convert("abc", config=config) == ""
     assert text_convert("，。", config=config) == "、。"
     assert calls == []
+
+
+def test_pinyin_convert_zero_tone_is_neutral(tmp_path):
+    path = tmp_path / "db.db"
+    PinyinRepository.create(path, [PinyinEntry("ma", "050", "ま")])
+    config = Config(database=path)
+    assert pinyin_convert("ma0", config=config) == "ま"
+
+
+def test_pinyin_convert_keep_error(tmp_path):
+    path = tmp_path / "db.db"
+    PinyinRepository.create(path, [])
+    config = Config(database=path)
+    assert pinyin_convert("bad1", error="keep", config=config) == "bad"
+
+
+def test_converter_migrates_legacy_database(tmp_path):
+    path = tmp_path / "legacy.db"
+    conn = sqlite3.connect(path)
+    conn.execute(
+        "CREATE TABLE pinyin_data ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "yinjie TEXT NOT NULL, tone TEXT NOT NULL, hiragana TEXT NOT NULL, "
+        "UNIQUE (yinjie, tone) ON CONFLICT REPLACE)"
+    )
+    conn.execute("INSERT INTO pinyin_data (yinjie, tone, hiragana) VALUES ('ni', '023', 'にい')")
+    conn.commit()
+    conn.close()
+
+    config = Config(database=path)
+    assert text_convert("你好", config=config) == "にい"
+
+    conn = sqlite3.connect(path)
+    try:
+        assert conn.execute("PRAGMA user_version").fetchone()[0] == 1
+        assert conn.execute("PRAGMA journal_mode").fetchone()[0].lower() == "delete"
+    finally:
+        conn.close()
+    assert not [
+        p for p in path.parent.iterdir() if p.name.endswith(("-wal", "-shm"))
+    ]

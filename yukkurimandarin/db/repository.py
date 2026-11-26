@@ -11,7 +11,7 @@ import sqlite3
 from pathlib import Path
 from typing import Iterable, Iterator, List, Optional, Sequence, Union
 
-from .connection import BUNDLED_DB_PATH, open_connection
+from .connection import is_bundled_path, open_connection
 from .errors import ReadOnlyDatabaseError
 from .models import PinyinEntry
 
@@ -66,7 +66,7 @@ class PinyinRepository:
         """
         if readonly or path is None:
             readonly = True
-        elif Path(path).resolve() == BUNDLED_DB_PATH.resolve():
+        elif is_bundled_path(path):
             readonly = True
         return cls(
             open_connection(path, readonly=readonly, create=create),
@@ -97,7 +97,7 @@ class PinyinRepository:
             ValueError: entries 中有不合法的记录。
         """
         target = Path(path)
-        if target.resolve() == BUNDLED_DB_PATH.resolve():
+        if is_bundled_path(target):
             raise ReadOnlyDatabaseError(
                 "内置数据库是只读资源，不能覆盖；请指定其他路径。"
             )
@@ -117,10 +117,6 @@ class PinyinRepository:
             try:
                 repo = cls(conn)
                 repo.upsert_many(validated)
-                # 交付的库统一用 DELETE 日志模式，只读打开不会产生 -wal/-shm
-                conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
-                conn.execute("PRAGMA journal_mode = DELETE")
-                conn.commit()
             finally:
                 conn.close()
             os.replace(temp, target)

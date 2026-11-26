@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import os
 import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
@@ -18,6 +19,15 @@ from .schema import SCHEMA_VERSION, migrate
 BUNDLED_DB_PATH = Path(__file__).parent.parent / "data" / "yinjie_database.db"
 
 _BUSY_TIMEOUT_MS = 5000
+
+
+def is_bundled_path(path: Union[str, Path]) -> bool:
+    """判断路径是否指向内置数据库（包括硬链接）。"""
+    candidate = Path(path)
+    try:
+        return os.path.samefile(candidate, BUNDLED_DB_PATH)
+    except OSError:
+        return candidate.resolve() == BUNDLED_DB_PATH.resolve()
 
 
 def open_connection(
@@ -46,7 +56,7 @@ def open_connection(
     else:
         path = Path(path)
         # 内置库一律只读，即使调用方显式要求可写
-        if path.resolve() == BUNDLED_DB_PATH.resolve():
+        if is_bundled_path(path):
             readonly = True
 
     if not path.exists() and (readonly or not create):
@@ -58,9 +68,9 @@ def open_connection(
     else:
         conn = sqlite3.connect(path)
 
-    conn.row_factory = sqlite3.Row
-    conn.execute(f"PRAGMA busy_timeout = {_BUSY_TIMEOUT_MS}")
     try:
+        conn.row_factory = sqlite3.Row
+        conn.execute(f"PRAGMA busy_timeout = {_BUSY_TIMEOUT_MS}")
         if readonly:
             version = conn.execute("PRAGMA user_version").fetchone()[0]
             if version != SCHEMA_VERSION:
@@ -68,9 +78,8 @@ def open_connection(
                     f"数据库版本 {version} 与当前代码的版本 {SCHEMA_VERSION} 不一致。"
                 )
         else:
-            # 先检查/迁移，再切 WAL：版本不匹配时不应改动数据库
+            # 不强制 WAL：自定义库保持原有日志模式，避免只读打开产生 -wal/-shm
             migrate(conn)
-            conn.execute("PRAGMA journal_mode = WAL")
             conn.commit()
     except Exception:
         conn.close()
