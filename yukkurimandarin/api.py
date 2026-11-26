@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Optional
 
 from .db import PinyinRepository
@@ -198,9 +199,12 @@ def _parse_pinyin_tokens(sentence: str) -> list[tuple[str, int]]:
 def _default_tokenizer() -> Optional["Tokenizer"]:
     """创建默认分词器；未安装 jieba 时返回 None。"""
     try:
+        import jieba
         from jieba import Tokenizer
     except ImportError:
         return None
+    # 默认分词器加载词典时会输出 INFO 级日志，这里压到 WARNING
+    jieba.setLogLevel(logging.WARNING)
     return Tokenizer()
 
 
