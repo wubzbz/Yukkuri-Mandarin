@@ -5,6 +5,7 @@ exclude =
     .pytest_cache,
     __pycache__,
     build,
-    dist
+    dist,
+    yukkurimandarin-bak
 max-line-length = 127
 max-complexity = 10
