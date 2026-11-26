@@ -16,40 +16,42 @@
 
 ## 2. 技术栈与依赖
 
-- 构建/打包：Poetry（`poetry-core>=2.0.0,<3.0.0`），配置见 `pyproject.toml`。
+- 构建/打包：uv（`uv_build` 构建后端），配置见 `pyproject.toml`；依赖锁定用 `uv.lock`。
 - **必需依赖**：`pypinyin>=0.54.0`。
 - **可选依赖**（以 `try/except` 方式引入，缺失时功能降级而非报错）：
   - `jieba>=0.42.1`：分词，提高多音字读音准确率。
   - `openpyxl>=3.1.5`：Excel（xlsx）导入导出。
   - 可选组安装：`pip install yukkuri-mandarin[all]` / `[jieba]` / `[openpyxl]`。
-- 开发依赖：`pytest>=8.4.1`（`[tool.poetry.group.dev.dependencies]`）。
-- `requirements.txt` 为固定版本的完整依赖清单（含测试依赖），供 CI 使用。
+- 开发依赖：`pytest>=8.4.1`、`flake8>=7.0.0`（`[dependency-groups] dev`）。
+- 不再维护 `requirements.txt` / `poetry.lock`；`uv.lock` 是唯一的依赖锁定文件。
 
 ## 3. 常用命令
 
 ```bash
-# 安装（开发模式，含可选与测试依赖）
-pip install -e .[all]
-# 或使用 Poetry
-poetry install --all-extras
+# 同步开发环境（含可选与测试依赖）
+uv sync --all-extras
 
 # 运行全部测试（pytest 配置在 pyproject.toml：[tool.pytest.ini_options]）
-pytest
+uv run pytest
 
 # 运行单个测试文件
-pytest tests/test_core.py
+uv run pytest tests/test_core.py
 
 # lint（与 CI 一致：语法错误/未定义名为硬性错误，其余为警告）
-flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+# 构建发行文件（生成到 dist/）
+uv build
 ```
 
 ## 4. 仓库结构
 
 ```
 Yukkuri-Mandarin/
-├── pyproject.toml            # 项目元数据、依赖、pytest 配置
-├── requirements.txt          # 固定版本依赖（CI 用）
+├── pyproject.toml            # 项目元数据、依赖、uv_build 配置、pytest 配置
+├── uv.lock                   # 依赖锁定文件（uv 自动生成）
+├── .flake8                   # flake8 配置（排除 .venv、dist 等）
 ├── README.md                 # 项目说明（简体中文）
 ├── LICENSE                   # MIT
 ├── .github/workflows/
@@ -141,10 +143,10 @@ Yukkuri-Mandarin/
 
 ## 8. 发版与 CI/CD
 
-- **CI**（`CI.yml`）：PR 到 `main` 时触发（`docs/**` 与 `README.md` 变更不触发）；矩阵 3 个 OS × Python 3.9–3.13；跑 flake8 + pytest。push 不触发（避免重复）。
+- **CI**（`CI.yml`）：PR 到 `main` 时触发（`docs/**` 与 `README.md` 变更不触发）；矩阵 3 个 OS × Python 3.9–3.13；用 `uv sync --frozen` 安装依赖后跑 flake8 + pytest。push 不触发（避免重复）。
 - **CD**（`CD.yml`）：PR 合并到 `main` 时自动发布。
   - 版本号取自 **PR 分支名**（如分支 `1.0.4` → 版本 `v1.0.4`），tag 为 `v<分支名>`。
-  - 构建并发布到 PyPI（可信发布，`skip-existing: true`），并创建 GitHub Release（内容指向 CHANGELOG）。
+  - 用 `uv build` 构建，并发布到 PyPI（可信发布，`skip-existing: true`），同时创建 GitHub Release（内容指向 CHANGELOG）。
 - **发版清单**：
   1. 新建分支，分支名 = 新版本号（如 `1.0.4`）；
   2. 更新 `pyproject.toml` 的 `version`；
@@ -157,3 +159,4 @@ Yukkuri-Mandarin/
 - 修改发音规则 / 数据库内容时，注意 `generate_gana.py` 与 `generate_table.py` 的联动：先改规则，再运行 `tests/modify_pydb.py` 重建数据库。
 - 音声记号（如 `/`、`\`、`'`）是功能的一部分，单元测试断言结果时需保留它们；`without_accent` 参数负责去除。
 - 若在 Windows 控制台看到中文乱码，是控制台代码页（GBK）问题，文件本身是 UTF-8，不要"修复"文件编码。
+- 本地 `uv sync` 会在仓库根生成 `.venv/`；`.flake8` 已排除 `.venv`、`dist`、`build`，新增构建目录时记得同步 `exclude`，否则 `flake8 .` 会扫描到第三方源码。

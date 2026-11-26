@@ -1,5 +1,12 @@
 # 更新日志
 
+## 未发布
+
+- 构建与依赖管理由 Poetry 迁移到 uv：改用 `uv_build` 构建后端，依赖锁定文件改为 `uv.lock`。
+- 移除 `requirements.txt` 与 `poetry.lock`；开发依赖改由 `[dependency-groups] dev` 管理。
+- CI/CD 改用 `astral-sh/setup-uv`，依赖安装用 `uv sync --frozen`，发布构建用 `uv build`。
+- 新增 `.flake8` 配置，排除 `.venv`、`dist`、`build` 等目录。
+
 ## 1.0.3
 
 2026/04/10

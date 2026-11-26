@@ -3,14 +3,26 @@ name = "yukkuri-mandarin"
 version = "1.0.3"
 description = "将汉语转换为“伪日本语”."
 keywords = ["mandarin", "普通话", "hiragana", "平仮名"]
-dynamic = ["classifiers"]
 authors = [
     {name = "wubzbz", email = "wubzbz@126.com" }
 ]
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.9,<4"
 dependencies = ["pypinyin>=0.54.0"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Natural Language :: Chinese (Simplified)",
+    "Natural Language :: Chinese (Traditional)",
+    "Natural Language :: Japanese",
+    "Topic :: Text Processing",
+    "Topic :: Utilities",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only"
+]
 
 [project.optional-dependencies]
 openpyxl = ["openpyxl>=3.1.5"]
@@ -24,45 +36,19 @@ Issues = "https://github.com/wubzbz/Yukkuri-Mandarin/issues"
 Source = "https://github.com/wubzbz/Yukkuri-Mandarin"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.12.0,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "yukkurimandarin"
+module-root = ""
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+    "flake8>=7.0.0",
+]
 
 [tool.pytest.ini_options]
 pythonpath = "yukkurimandarin"
 testpaths = "tests"
-
-[tool.poetry]
-packages = [
-    { include = "yukkurimandarin" },
-]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Natural Language :: Chinese (Simplified)",
-    "Natural Language :: Chinese (Traditional)",
-    "Natural Language :: Japanese",
-    "Topic :: Text Processing",
-    "Topic :: Utilities",
-    "Intended Audience :: Developers",
-    "Operating System :: OS Independent"
-]
-
-[[tool.poetry.source]]
-name = "aliyun"
-url = "https://mirrors.aliyun.com/pypi/simple/"
-priority = "supplemental"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.4.1"
-
-[tool.poetry.group.excel-export]
-optional = true
-
-[tool.poetry.group.excel-export.dependencies]
-openpyxl = "^3.1.5"
-
-[tool.poetry.group.tokenization]
-optional = true
-
-[tool.poetry.group.tokenization.dependencies]
-jieba = {version = "^0.42.1", source = "aliyun"}
-

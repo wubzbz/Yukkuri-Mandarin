@@ -84,29 +84,23 @@ pip install yukkuri-mandarin-<版本号>.tar.gz
 
 ![点击仓库右上角的code](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/Asset/clone.png)
 
-### 4.2 安装依赖项
+### 4.2 同步开发环境
 
 > [!NOTE]
-> 在执行以下步骤之前，最好为项目新建一个虚拟环境。
+> 在执行以下步骤之前，请先安装 [uv](https://docs.astral.sh/uv/)。
 
-项目依赖列在`requirements.txt`文件中，请安装它们：
+本项目使用 uv 管理开发环境与依赖锁定（`uv.lock`），在仓库根目录执行：
 
 ```bash
-pip install -r requirements.txt
+uv sync --all-extras
 ```
+
+该命令会自动创建 `.venv` 并安装包本身、全部可选依赖和开发依赖。
 
 ### 4.3 构建发行文件
 
-1. 首先安装build工具：
-
 ```bash
-pip install build
-```
-
-2. 构建发行文件：
-
-```bash
-python -m build
+uv build
 ```
 
 此命令会在`dist/`目录下生成`.whl`和`.tar.gz`发行文件。
