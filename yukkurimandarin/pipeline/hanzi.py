@@ -78,6 +78,10 @@ def fill_kana(
             positions.append(run.syl_start + offset)
 
     entries = repository.get_many(serials)
+    if len(entries) != len(serials):
+        raise ValueError(
+            f"批量查询结果数量不一致：{len(entries)} != {len(serials)}。"
+        )
     for index, entry in zip(positions, entries):
         kana = entry.hiragana if entry is not None else default
         if updated[index].kana != kana:

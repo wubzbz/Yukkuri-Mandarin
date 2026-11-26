@@ -145,3 +145,15 @@ def test_future_version_keeps_journal_mode(tmp_path):
         assert conn.execute("PRAGMA journal_mode").fetchone()[0].lower() == "delete"
     finally:
         conn.close()
+
+
+def test_readonly_future_version_rejected(tmp_path):
+    path = tmp_path / "future.db"
+    conn = sqlite3.connect(path)
+    create_schema(conn)
+    conn.execute("PRAGMA user_version = 99")
+    conn.commit()
+    conn.close()
+
+    with pytest.raises(SchemaError):
+        PinyinRepository.open(path, readonly=True)

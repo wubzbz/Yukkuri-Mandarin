@@ -77,3 +77,30 @@ def test_xlsx_roundtrip(tmp_path, entries):
     path = tmp_path / "table.xlsx"
     assert write_table(entries, path) == 2
     assert read_table(path) == entries
+
+
+def test_csv_empty_hiragana_roundtrip(tmp_path):
+    entries = [PinyinEntry("ni", "121", "")]
+    path = tmp_path / "empty.csv"
+    write_table(entries, path)
+    assert read_table(path) == entries
+
+
+def test_xlsx_empty_hiragana_roundtrip(tmp_path):
+    pytest.importorskip("openpyxl")
+    entries = [PinyinEntry("ni", "121", "")]
+    path = tmp_path / "empty.xlsx"
+    write_table(entries, path)
+    assert read_table(path) == entries
+
+
+def test_xlsx_extra_columns_rejected(tmp_path):
+    openpyxl = pytest.importorskip("openpyxl")
+    path = tmp_path / "extra.xlsx"
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.append(["拼音", "声调", "平假名", "多余"])
+    sheet.append(["ni", "121", "にい", "x"])
+    workbook.save(path)
+    with pytest.raises(TransferError):
+        read_table(path)

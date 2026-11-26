@@ -2,7 +2,7 @@ import dataclasses
 
 import pytest
 
-from yukkurimandarin.segments import Document, Syllable
+from yukkurimandarin.segments import Document, Run, Syllable
 
 
 def test_empty_document():
@@ -74,3 +74,23 @@ def test_join_rejects_wrong_count():
 def test_invalid_document():
     with pytest.raises(ValueError):
         Document("x", (), ())
+
+
+def test_from_text_rejects_non_str():
+    with pytest.raises(ValueError, match="参数text必须是字符串"):
+        Document.from_text(None)  # type: ignore[arg-type]
+
+
+def test_invalid_run_layouts():
+    with pytest.raises(ValueError):
+        Document("ab", (Run("latin", 0, 1, 0, 0),), ())
+    with pytest.raises(ValueError):
+        Document("abc", (Run("latin", 0, 1, 0, 0), Run("latin", 2, 3, 0, 0)), ())
+    with pytest.raises(ValueError):
+        Document("a", (Run("latin", 0, 2, 0, 0),), ())
+    with pytest.raises(ValueError):
+        Document("a", (Run("hanzi", 0, 1, 0, 0),), ())
+    with pytest.raises(ValueError):
+        Document("a", (Run("latin", 0, 1, 0, 1),), (Syllable("a"),))
+    with pytest.raises(ValueError):
+        Document("a", (Run("latin", 0, 1, 0, 0),), (Syllable("a"),))

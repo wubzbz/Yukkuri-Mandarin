@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import argparse
+import sqlite3
 import sys
 from pathlib import Path
 from typing import Optional, Sequence, Union
@@ -63,10 +64,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parser.parse_args(argv)
     try:
         count = build_database(Path(args.output), overwrite=args.overwrite)
-    except FileExistsError as exc:
-        print(f"错误：{exc}", file=sys.stderr)
-        return 1
-    except ReadOnlyDatabaseError as exc:
+    except (OSError, sqlite3.Error, ValueError, ReadOnlyDatabaseError) as exc:
         print(f"错误：{exc}", file=sys.stderr)
         return 1
     print(f"已写入 {count} 条记录：{args.output}")

@@ -117,6 +117,10 @@ class PinyinRepository:
             try:
                 repo = cls(conn)
                 repo.upsert_many(validated)
+                # 交付的库统一用 DELETE 日志模式，只读打开不会产生 -wal/-shm
+                conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+                conn.execute("PRAGMA journal_mode = DELETE")
+                conn.commit()
             finally:
                 conn.close()
             os.replace(temp, target)
@@ -322,7 +326,11 @@ def _validate_entry(entry: PinyinEntry) -> None:
 
 def _validate_tone_pattern(tone: str) -> None:
     """校验查询用的声调模式。"""
-    if len(tone) != 3 or any(char not in "012345*" for char in tone):
+    if (
+        not isinstance(tone, str)
+        or len(tone) != 3
+        or any(char not in "012345*" for char in tone)
+    ):
         raise ValueError(f"声调模式格式错误：{tone!r}。")
     if tone[1] == "0":
         raise ValueError(f"声调模式第二位不能为 0：{tone!r}。")

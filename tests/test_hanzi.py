@@ -46,3 +46,35 @@ def test_fill_kana_missing_uses_default(tmp_path):
     with PinyinRepository.open(path, readonly=True) as repo:
         doc = fill_kana(doc, repo, default="?")
     assert [s.kana for s in doc.syllables] == ["にい", "?"]
+
+
+def test_fill_kana_multiple_runs(tmp_path):
+    path = tmp_path / "test.db"
+    PinyinRepository.create(path, [
+        PinyinEntry("ni", "033", "K1"),
+        PinyinEntry("hao", "330", "K2"),
+        PinyinEntry("shi", "044", "K3"),
+        PinyinEntry("jie", "440", "K4"),
+    ])
+    doc = fill_pinyin(Document.from_text("你好，世界"))
+    with PinyinRepository.open(path, readonly=True) as repo:
+        doc = fill_kana(doc, repo)
+    assert [s.kana for s in doc.syllables] == ["K1", "K2", "K3", "K4"]
+
+
+def test_fill_kana_length_mismatch():
+    class ShortRepository:
+        def get_many(self, keys):
+            return []
+
+    doc = fill_pinyin(Document.from_text("你好"))
+    with pytest.raises(ValueError, match="批量查询结果数量不一致"):
+        fill_kana(doc, ShortRepository())
+
+
+def test_fill_pinyin_length_mismatch(monkeypatch):
+    import yukkurimandarin.pipeline.hanzi as module
+
+    monkeypatch.setattr(module, "to_syllables", lambda words: [])
+    with pytest.raises(ValueError, match="拼音数量与汉字数量不一致"):
+        module.fill_pinyin(Document.from_text("你好"))

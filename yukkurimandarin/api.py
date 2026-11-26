@@ -96,9 +96,11 @@ class Converter:
         if not sentence:
             return ""
         document = Document.from_text(normalize_text(sentence))
-        document = fill_pinyin(document, self.tokenizer)
-        document = apply_sandhi(document)
-        document = fill_kana(document, self.repository)
+        # 没有汉字段时不碰分词器和数据库
+        if any(run.kind == "hanzi" for run in document.runs):
+            document = fill_pinyin(document, self.tokenizer)
+            document = apply_sandhi(document)
+            document = fill_kana(document, self.repository)
         result = assemble(document, self._config.non_hanzi)
         return finalize(result, without_accent=without_accent)
 

@@ -107,14 +107,23 @@ def _read_xlsx(path: Path) -> List[PinyinEntry]:
         entries: List[PinyinEntry] = []
         for line_no, row in enumerate(rows, 2):
             cells = ["" if cell is None else str(cell) for cell in row or ()]
-            while cells and not cells[-1]:
-                cells.pop()
-            if not cells:
+            if not any(cells):
                 continue
-            entries.append(_make_entry(cells, line_no))
+            entries.append(_make_entry(_normalize_cells(cells, line_no), line_no))
         return entries
     finally:
         workbook.close()
+
+
+def _normalize_cells(cells: List[str], line_no: int) -> List[str]:
+    """把 xlsx 行补齐/裁剪成三列；多余的非空列视为格式错误。"""
+    if len(cells) > len(CSV_HEADERS):
+        if any(cell for cell in cells[len(CSV_HEADERS):]):
+            raise TransferError(f"第 {line_no} 行包含多余列：{cells!r}。")
+        cells = cells[:len(CSV_HEADERS)]
+    if len(cells) < len(CSV_HEADERS):
+        cells = cells + [""] * (len(CSV_HEADERS) - len(cells))
+    return cells
 
 
 def _write_xlsx(entries: Iterable[PinyinEntry], path: Path) -> int:

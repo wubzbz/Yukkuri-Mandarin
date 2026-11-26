@@ -72,8 +72,10 @@ class Document:
             音节尚未填充（syllable 为空、tone 为 0）的 Document。
 
         Raises:
-            ValueError: 生成的 runs 与 syllables 不满足模块文档中的不变量。
+            ValueError: text 不是字符串，或生成的 runs/syllables 不满足不变量。
         """
+        if not isinstance(text, str):
+            raise ValueError(f"参数text必须是字符串: {text}")
         if not text:
             return cls(text, (), ())
 

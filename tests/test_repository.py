@@ -1,3 +1,5 @@
+import sqlite3
+
 import pytest
 
 from yukkurimandarin.db import (
@@ -152,3 +154,33 @@ def test_read_only_rejects_writes(db_path):
 def test_create_bundled_rejected():
     with pytest.raises(ReadOnlyDatabaseError):
         PinyinRepository.create(BUNDLED_DB_PATH, [], overwrite=True)
+
+
+def test_bundled_open_is_forced_readonly():
+    with PinyinRepository.open(BUNDLED_DB_PATH) as repo:
+        with pytest.raises(ReadOnlyDatabaseError):
+            repo.upsert(PinyinEntry("a", "010", "x"))
+
+
+def test_search_invalid_pattern(db_path):
+    with PinyinRepository.open(db_path, readonly=True) as repo:
+        for pattern in ("12", "1x1", "102", 123):
+            with pytest.raises(ValueError):
+                repo.search("ni", pattern)
+
+
+def test_create_uses_delete_journal(db_path):
+    conn = sqlite3.connect(db_path)
+    try:
+        assert conn.execute("PRAGMA journal_mode").fetchone()[0].lower() == "delete"
+    finally:
+        conn.close()
+
+    with PinyinRepository.open(db_path, readonly=True) as repo:
+        assert repo.count() == 3
+    sidecars = [
+        path.name
+        for path in db_path.parent.iterdir()
+        if path.name.endswith(("-wal", "-shm"))
+    ]
+    assert sidecars == []

@@ -72,3 +72,21 @@ def test_default_tokenizer_is_cached(monkeypatch):
     second = api._default_tokenizer()
     assert first is second
     assert len(calls) == 1
+
+
+def test_text_convert_non_hanzi_skips_resources(monkeypatch, tmp_path):
+    from yukkurimandarin import api
+
+    monkeypatch.setattr(api, "_TOKENIZER_INITIALIZED", False, raising=False)
+    monkeypatch.setattr(api, "_DEFAULT_TOKENIZER", None, raising=False)
+    calls = []
+
+    def factory():
+        calls.append(1)
+        return object()
+
+    monkeypatch.setattr(api, "_create_tokenizer", factory)
+    config = Config(database=tmp_path / "missing.db")
+    assert text_convert("abc", config=config) == ""
+    assert text_convert("，。", config=config) == "、。"
+    assert calls == []
