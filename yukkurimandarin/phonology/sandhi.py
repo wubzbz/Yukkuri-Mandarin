@@ -5,8 +5,8 @@
 不改变拼音、假名等其他字段。
 
 注意：pypinyin 的词组表已经对部分词做了变调（如“一个”“一起”“不对”），
-所以规则必须按后字的声调**无条件重写**，不能只在“当前是原调”时才改；
-这些规则本身是幂等的。
+所以规则必须按后字的声调**无条件重写**，不能只在“当前是原调”时才改。
+但 `apply()` 只应对原始拼音调用一次：重复调用会把“不”的变调叠加。
 """
 
 from __future__ import annotations
@@ -21,6 +21,11 @@ if TYPE_CHECKING:
 _NUMERAL_ALL = frozenset("零一二三四五六七八九十百千万亿")
 # 直接修饰这些单位时，“一”是数字的首位，仍按普通规则变调
 _LEADING_UNITS = frozenset("百千万亿")
+# 前后同字时，这些字更可能是数词/量词而非重叠动词（一步一步、一年一年）
+_MEASURE_OR_NUMERAL = _NUMERAL_ALL | frozenset(
+    "个只条张片块年月日天次回遍下趟场步层页句段节分秒斤米里亩间"
+    "套双对副幅首篇本册支枝根颗粒朵棵株辆台部架艘碗口声"
+)
 
 
 def apply(doc: Document) -> Document:
@@ -119,9 +124,17 @@ def _yi_tone(chars: list[str], tones: list[int], index: int) -> int:
     previous = chars[index - 1] if index > 0 else ""
     following = chars[index + 1] if index + 1 < len(chars) else ""
 
-    # 看一看、想一想：重叠动词中间读轻声
-    if previous and previous == following and previous != "一":
+    # 看一看、想一想：重叠动词中间读轻声；
+    # 数词/量词重叠（一步一步、一年一年）不适用，按普通规则变调
+    if (
+        previous
+        and previous == following
+        and previous not in _MEASURE_OR_NUMERAL
+    ):
         return 5
+    # 一百一百、一千一千：后一个“一”是新的数字开头，仍按首位变调
+    if previous == following and previous in _LEADING_UNITS:
+        return 2 if tones[index + 1] == 4 else 4
     # 多位数中非首位的“一”读阴平
     if previous in _NUMERAL_ALL:
         return 1

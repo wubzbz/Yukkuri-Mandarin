@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import logging
+import threading
 from typing import TYPE_CHECKING, Optional
 
 from .db import PinyinRepository
@@ -196,8 +197,26 @@ def _parse_pinyin_tokens(sentence: str) -> list[tuple[str, int]]:
     return tokens
 
 
+# 默认分词器进程内共享；jieba 首次分词要加载词典，不能每个 Converter 建一个
+_TOKENIZER_LOCK = threading.Lock()
+_DEFAULT_TOKENIZER: Optional["Tokenizer"] = None
+_TOKENIZER_INITIALIZED = False
+
+
 def _default_tokenizer() -> Optional["Tokenizer"]:
-    """创建默认分词器；未安装 jieba 时返回 None。"""
+    """返回进程内共享的默认分词器；未安装 jieba 时返回 None。"""
+    global _DEFAULT_TOKENIZER, _TOKENIZER_INITIALIZED
+    if _TOKENIZER_INITIALIZED:
+        return _DEFAULT_TOKENIZER
+    with _TOKENIZER_LOCK:
+        if not _TOKENIZER_INITIALIZED:
+            _DEFAULT_TOKENIZER = _create_tokenizer()
+            _TOKENIZER_INITIALIZED = True
+    return _DEFAULT_TOKENIZER
+
+
+def _create_tokenizer() -> Optional["Tokenizer"]:
+    """创建分词器；未安装 jieba 时返回 None。"""
     try:
         import jieba
         from jieba import Tokenizer

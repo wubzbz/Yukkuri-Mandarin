@@ -54,9 +54,17 @@ def test_bu(sentence, expected):
     ("一万", [2, 4]),
     ("一楼", [4, 2]),  # 默认按数量词处理
     ("一五一十", [1, 3, 1, 2]),
+    ("一步一步", [2, 4, 2, 4]),
+    ("一年一年", [4, 2, 4, 2]),
+    ("一个一个", [2, 4, 2, 4]),
+    ("一百一百", [4, 3, 4, 3]),
 ])
 def test_yi(sentence, expected):
     assert tones(sandhi.apply_yi(build(sentence))) == expected
+
+
+def test_bu_yi_combination():
+    assert tones(sandhi.apply(build("不一般"))) == [4, 4, 1]
 
 
 def test_boundaries_break_sandhi():
@@ -67,8 +75,3 @@ def test_boundaries_break_sandhi():
 def test_apply_combines_rules():
     doc = build("一天，不对。")
     assert tones(sandhi.apply(doc)) == [4, 1, 2, 4]
-
-
-def test_apply_is_idempotent():
-    doc = sandhi.apply(build("一天，不对。"))
-    assert tones(sandhi.apply(doc)) == tones(doc)

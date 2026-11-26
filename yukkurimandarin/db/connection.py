@@ -68,8 +68,9 @@ def open_connection(
                     f"数据库版本 {version} 与当前代码的版本 {SCHEMA_VERSION} 不一致。"
                 )
         else:
-            conn.execute("PRAGMA journal_mode = WAL")
+            # 先检查/迁移，再切 WAL：版本不匹配时不应改动数据库
             migrate(conn)
+            conn.execute("PRAGMA journal_mode = WAL")
             conn.commit()
     except Exception:
         conn.close()

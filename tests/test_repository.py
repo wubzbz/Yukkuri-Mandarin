@@ -125,6 +125,17 @@ def test_create_overwrite(db_path):
         assert repo.count() == 1
 
 
+def test_create_overwrite_failure_keeps_old(db_path, entries):
+    with pytest.raises(ValueError):
+        PinyinRepository.create(
+            db_path, [PinyinEntry("x", "bad", "x")], overwrite=True
+        )
+    with PinyinRepository.open(db_path, readonly=True) as repo:
+        assert repo.count() == 3
+        assert repo.get("ni", "121") == entries[0]
+    assert not [p for p in db_path.parent.iterdir() if p.name.endswith(".tmp")]
+
+
 @pytest.mark.parametrize("tone", ["1x1", "1211", "103", ""])
 def test_invalid_entry(db_path, tone):
     with PinyinRepository.open(db_path) as repo:

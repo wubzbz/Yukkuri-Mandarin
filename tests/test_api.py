@@ -54,3 +54,21 @@ def test_converter_custom_database(tmp_path):
     PinyinRepository.create(path, [PinyinEntry("ni", "023", "にい")])
     config = Config(database=path)
     assert text_convert("你好", config=config) == "にい"
+
+
+def test_default_tokenizer_is_cached(monkeypatch):
+    from yukkurimandarin import api
+
+    calls = []
+    monkeypatch.setattr(api, "_TOKENIZER_INITIALIZED", False, raising=False)
+    monkeypatch.setattr(api, "_DEFAULT_TOKENIZER", None, raising=False)
+
+    def factory():
+        calls.append(1)
+        return object()
+
+    monkeypatch.setattr(api, "_create_tokenizer", factory)
+    first = api._default_tokenizer()
+    second = api._default_tokenizer()
+    assert first is second
+    assert len(calls) == 1

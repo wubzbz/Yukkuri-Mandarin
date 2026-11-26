@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import os
 import sqlite3
 from pathlib import Path
 from typing import Iterable, Iterator, List, Optional, Sequence, Union
@@ -82,6 +83,9 @@ class PinyinRepository:
     ) -> None:
         """新建数据库文件并写入全部记录。
 
+        先写同目录下的临时文件，全部成功后再原子替换目标文件；
+        失败时目标文件保持不变。
+
         Args:
             path: 目标路径。
             entries: 全部记录。
@@ -90,22 +94,39 @@ class PinyinRepository:
         Raises:
             FileExistsError: 目标已存在且 overwrite 为 False。
             ReadOnlyDatabaseError: 目标是随包分发的内置数据库。
+            ValueError: entries 中有不合法的记录。
         """
         target = Path(path)
         if target.resolve() == BUNDLED_DB_PATH.resolve():
             raise ReadOnlyDatabaseError(
                 "内置数据库是只读资源，不能覆盖；请指定其他路径。"
             )
-        if target.exists():
-            if not overwrite:
-                raise FileExistsError(f"数据库已存在：{target}")
-            target.unlink()
-        conn = open_connection(target, create=True)
+        if target.exists() and not overwrite:
+            raise FileExistsError(f"数据库已存在：{target}")
+
+        # 先物化并校验，任何一条非法都在创建临时文件之前失败
+        validated = [
+            PinyinEntry(entry.yinjie, entry.tone, entry.hiragana)
+            for entry in _validated(entries)
+        ]
+        temp = target.with_name(f".{target.name}.{os.getpid()}.tmp")
+        if temp.exists():
+            temp.unlink()
         try:
-            repo = cls(conn)
-            repo.upsert_many(entries)
-        finally:
-            conn.close()
+            conn = open_connection(temp, create=True)
+            try:
+                repo = cls(conn)
+                repo.upsert_many(validated)
+            finally:
+                conn.close()
+            os.replace(temp, target)
+        except Exception:
+            if temp.exists():
+                try:
+                    temp.unlink()
+                except OSError:
+                    pass
+            raise
 
     def close(self) -> None:
         """关闭底层连接。"""
