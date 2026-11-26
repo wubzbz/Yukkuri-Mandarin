@@ -1,15 +1,16 @@
 # 直接运行的测试
+# uv run python tests/test.py
 
-from yukkurimandarin import pinyin_convert, text_convert
+from yukkurimandarin import text_convert
 from time import time
 
 start = time()
 
-print(text_convert("不，不对，就不说不要散步了，是不是部分不正确，不会是不好不好吧。你要不要吧！对不起"))
+print(text_convert("美好的一天，一心二用，一石二鸟，一款产品，一箭双雕"))
 end = time()
 print(end - start)
 
-print(text_convert("不，不对，就不说不要散步了，是不是部分不正确，不会是不好不好吧。你要不要吧！对不起"))
+print(text_convert("朕出上联：一行征雁向南飞。"))
 end2 = time()
 print(end2 - end)
 
