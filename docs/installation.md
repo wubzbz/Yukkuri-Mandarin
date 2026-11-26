@@ -1,5 +1,8 @@
 # 安装方式
 
+> [!NOTE]
+> 本文档适用于 **2.0** 版以上。旧版安装文档见 [archive/1.0/installation.md](archive/1.0/installation.md)。
+
 ## 0. 目录
 
 - [从PyPI安装](#1-从pypi安装)
@@ -10,7 +13,7 @@
 
 ## 1. 从PyPI安装
 
-最经典的安装方法。首先确保您的设备上安装了python解释器(版本至少为3.9)和pip。
+最经典的安装方法。首先确保您的设备上安装了 Python 解释器（版本至少为3.9）和 pip。
 
 在终端输入如下命令将安装yukkuri-mandarin包以及两个可选依赖包，获得最完整的体验：
 
@@ -52,7 +55,7 @@ pip install --upgrade yukkuri-mandarin
 下载完成后，在终端中执行以下命令进行安装：
 
 ```bash
-pip install yukkuri-mandarin-<版本号，比如1.2.0>-py3-none-any.whl
+pip install yukkuri-mandarin-<版本号，比如2.0.0>-py3-none-any.whl
 ```
 > [!IMPORTANT]
 > 请将`yukkuri-mandarin-x.x.x-py3-none-any.whl`替换为您实际下载的文件名。
