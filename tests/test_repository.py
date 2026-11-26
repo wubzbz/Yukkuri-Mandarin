@@ -4,6 +4,7 @@ import pytest
 
 from yukkurimandarin.db import (
     BUNDLED_DB_PATH,
+    DatabaseUnavailableError,
     PinyinEntry,
     PinyinRepository,
     ReadOnlyDatabaseError,
@@ -191,3 +192,19 @@ def test_create_uses_delete_journal(db_path):
         if path.name.endswith(("-wal", "-shm"))
     ]
     assert sidecars == []
+
+
+def test_corrupt_database_wrapped(tmp_path):
+    path = tmp_path / "broken.db"
+    path.write_bytes(b"not a database")
+    with pytest.raises(DatabaseUnavailableError):
+        PinyinRepository.open(path, readonly=True)
+
+
+def test_closed_repository_wraps_errors(db_path):
+    repo = PinyinRepository.open(db_path)
+    repo.close()
+    with pytest.raises(DatabaseUnavailableError):
+        repo.get("ni", "121")
+    with pytest.raises(DatabaseUnavailableError):
+        list(repo.iter_all())

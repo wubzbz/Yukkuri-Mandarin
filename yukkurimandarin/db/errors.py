@@ -10,6 +10,7 @@ from __future__ import annotations
 from ..errors import MissingDependencyError as MissingDependencyError
 
 __all__ = [
+    "DatabaseUnavailableError",
     "MissingDependencyError",
     "ReadOnlyDatabaseError",
     "SchemaError",
@@ -20,6 +21,10 @@ __all__ = [
 
 class YukkuriDBError(Exception):
     """数据库层异常的基类。"""
+
+
+class DatabaseUnavailableError(YukkuriDBError):
+    """数据库无法打开，或底层操作失败。"""
 
 
 class SchemaError(YukkuriDBError):

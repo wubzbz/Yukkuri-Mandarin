@@ -113,8 +113,12 @@ class Converter:
             document = fill_pinyin(document, self.tokenizer)
             document = apply_sandhi(document)
             document = fill_kana(document, self.repository)
-        result = assemble(document, self._config.non_hanzi)
-        return finalize(result, without_accent=without_accent)
+        result = assemble(
+            document,
+            self._config.non_hanzi,
+            without_accent=without_accent,
+        )
+        return result
 
     def pinyin_convert(
         self,

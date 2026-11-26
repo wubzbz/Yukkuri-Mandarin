@@ -2,7 +2,7 @@ import sqlite3
 
 import pytest
 
-from yukkurimandarin import Config, Converter, pinyin_convert, text_convert
+from yukkurimandarin import Config, Converter, NonHanziModes, pinyin_convert, text_convert
 from yukkurimandarin.db import PinyinEntry, PinyinRepository
 
 
@@ -133,3 +133,9 @@ def test_converter_migrates_legacy_database(tmp_path):
     assert not [
         p for p in path.parent.iterdir() if p.name.endswith(("-wal", "-shm"))
     ]
+
+
+def test_without_accent_preserves_kept_text():
+    config = Config(non_hanzi=NonHanziModes(global_mode="keep"))
+    assert text_convert("a_b", config=config, without_accent=True) == "a_b"
+    assert text_convert("ア", config=config, without_accent=True) == "ア"

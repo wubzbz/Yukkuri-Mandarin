@@ -11,8 +11,8 @@ _NUMBER_MAP = {
     ".": "点",
 }
 
-# 个、十、百、千
-_UNIT_MAP = ("", "十", "百", "千")
+# 节内位值，最高支持五位数（亿级由“万亿 + 千亿…”合并而成）
+_SECTION_UNITS = ("", "十", "百", "千", "万")
 
 # 可读符号
 _SYMBOLS = {"+": "加", "=": "等于", "#": "井"}
@@ -95,24 +95,41 @@ def _fractional_read(digits: str) -> str:
 
 
 def _integral_read(digits: str) -> str:
-    """按十进制位值繁读整数。"""
+    """按中文分级（亿 / 万 / 个）繁读整数。"""
+    yi = digits[:-8]
+    wan = digits[-8:-4] if len(digits) > 4 else ""
+    ge = digits[-4:]
+
     result = ""
-    for index, char in enumerate(reversed(digits)):
-        # 分级单位
-        if index == 4 or index == 12:
-            result = f"万{result}"
-        if index == 8:
-            # 万级全为 0 时不留“万”
-            if result[:1] == "万":
-                result = result[1:]
-            result = f"亿{result}"
-        # 尾部无意义的零不出现，各节连续的零只保留一个
+    if yi and int(yi):
+        result = f"{_read_section(yi)}亿"
+    if wan and int(wan):
+        # 万级有前导零（不足四位）时，跨级要补“零”
+        if result and int(wan) < 1000:
+            result += "零"
+        result += f"{_read_section(wan)}万"
+    if ge and int(ge):
+        # 个级不足四位、或万级整级为零时，跨级要补“零”
+        if result and (int(ge) < 1000 or (bool(wan) and int(wan) == 0)):
+            result += "零"
+        result += _read_section(ge)
+    return result
+
+
+def _read_section(digits: str) -> str:
+    """读一个 1–5 位的节，忽略前导零，节内连续零只读一个。"""
+    result = ""
+    pending_zero = False
+    for index, char in enumerate(digits):
+        place = len(digits) - 1 - index
         if char == "0":
-            if result and result[0] not in "零万亿":
-                result = f"零{result}"
-        else:
-            result = f"{_NUMBER_MAP[char]}{_UNIT_MAP[index % 4]}{result}"
+            pending_zero = True
+            continue
+        if result and pending_zero:
+            result += "零"
+        pending_zero = False
+        result += f"{_NUMBER_MAP[char]}{_SECTION_UNITS[place]}"
     # 10~19 读“十x”而不是“一十x”
-    if result[:2] == "一十":
+    if result.startswith("一十"):
         result = result[1:]
     return result

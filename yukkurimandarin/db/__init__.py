@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from .connection import BUNDLED_DB_PATH, connect
 from .errors import (
+    DatabaseUnavailableError,
     MissingDependencyError,
     ReadOnlyDatabaseError,
     SchemaError,
@@ -22,6 +23,7 @@ from .transfer import read_table, write_table
 __all__ = [
     "BUNDLED_DB_PATH",
     "SCHEMA_VERSION",
+    "DatabaseUnavailableError",
     "MissingDependencyError",
     "PinyinEntry",
     "PinyinRepository",

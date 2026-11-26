@@ -6,17 +6,32 @@
 
 from __future__ import annotations
 
+import functools
 import os
 import sqlite3
 from pathlib import Path
 from typing import Iterable, Iterator, List, Optional, Sequence, Union
 
 from .connection import is_bundled_path, open_connection
-from .errors import ReadOnlyDatabaseError
+from .errors import DatabaseUnavailableError, ReadOnlyDatabaseError
 from .models import PinyinEntry
 
 # SQLite 的变量上限约为 999，每行占 3 个参数
 _CHUNK_SIZE = 250
+
+
+def _translate_db_errors(method):
+    """把 sqlite3 原生异常包装成 DatabaseUnavailableError。"""
+
+    @functools.wraps(method)
+    def wrapper(*args, **kwargs):
+        try:
+            return method(*args, **kwargs)
+        except sqlite3.Error as exc:
+            raise DatabaseUnavailableError(f"数据库操作失败：{exc}") from exc
+
+    return wrapper
+
 
 _SELECT_ALL = "SELECT yinjie, tone, hiragana FROM pinyin_data"
 
@@ -47,6 +62,7 @@ class PinyinRepository:
         self._readonly = readonly
 
     @classmethod
+    @_translate_db_errors
     def open(
         cls,
         path: Optional[Union[str, Path]] = None,
@@ -74,6 +90,7 @@ class PinyinRepository:
         )
 
     @classmethod
+    @_translate_db_errors
     def create(
         cls,
         path: Union[str, Path],
@@ -143,6 +160,7 @@ class PinyinRepository:
     def __exit__(self, exc_type: object, exc_value: object, traceback: object) -> None:
         self.close()
 
+    @_translate_db_errors
     def get(self, yinjie: str, tone: str) -> Optional[PinyinEntry]:
         """精确查询单条记录。
 
@@ -154,6 +172,7 @@ class PinyinRepository:
         ).fetchone()
         return None if row is None else _row_to_entry(row)
 
+    @_translate_db_errors
     def get_many(self, keys: Sequence[tuple[str, str]]) -> List[Optional[PinyinEntry]]:
         """批量精确查询。
 
@@ -190,6 +209,7 @@ class PinyinRepository:
                 chunk_result[row["ord"]] = _row_to_entry(row)
         return chunk_result
 
+    @_translate_db_errors
     def search(self, yinjie: str, tone: Optional[str] = None) -> List[PinyinEntry]:
         """按音节与声调模式查询。
 
@@ -216,15 +236,20 @@ class PinyinRepository:
             )
         return [_row_to_entry(row) for row in rows]
 
+    @_translate_db_errors
     def list_by_yinjie(self, yinjie: str) -> List[PinyinEntry]:
         """查询某个音节的全部记录，按声调升序排列。"""
         return self.search(yinjie)
 
     def iter_all(self) -> Iterator[PinyinEntry]:
         """流式遍历全部记录，适合导出大表。"""
-        for row in self._conn.execute(f"{_SELECT_ALL} ORDER BY yinjie, tone"):
-            yield _row_to_entry(row)
+        try:
+            for row in self._conn.execute(f"{_SELECT_ALL} ORDER BY yinjie, tone"):
+                yield _row_to_entry(row)
+        except sqlite3.Error as exc:
+            raise DatabaseUnavailableError(f"数据库操作失败：{exc}") from exc
 
+    @_translate_db_errors
     def upsert(self, entry: PinyinEntry) -> None:
         """插入或覆盖单条记录。"""
         self._ensure_writable()
@@ -234,6 +259,7 @@ class PinyinRepository:
                 _UPSERT_SQL, (entry.yinjie, entry.tone, entry.hiragana)
             )
 
+    @_translate_db_errors
     def upsert_many(self, entries: Iterable[PinyinEntry]) -> int:
         """批量插入或覆盖，单事务完成。
 
@@ -248,6 +274,7 @@ class PinyinRepository:
             self._conn.executemany(_UPSERT_SQL, rows)
         return len(rows)
 
+    @_translate_db_errors
     def replace_all(self, entries: Iterable[PinyinEntry]) -> int:
         """清空后写入全部记录，用于整库重建。
 
@@ -262,6 +289,7 @@ class PinyinRepository:
                 self._conn.executemany(_UPSERT_SQL, rows)
         return len(rows)
 
+    @_translate_db_errors
     def delete(self, yinjie: str, tone: str) -> bool:
         """删除单条记录。
 
@@ -275,6 +303,7 @@ class PinyinRepository:
             )
         return cursor.rowcount > 0
 
+    @_translate_db_errors
     def delete_by_yinjie(self, yinjie: str) -> int:
         """删除某个音节的全部记录。
 
@@ -288,6 +317,7 @@ class PinyinRepository:
             )
         return cursor.rowcount
 
+    @_translate_db_errors
     def count(self) -> int:
         """返回记录总数。"""
         row = self._conn.execute("SELECT COUNT(*) AS n FROM pinyin_data").fetchone()
