@@ -1,6 +1,28 @@
 # 更新日志
 
-## 未发布
+## 2.0.0
+
+2026/11/26
+
+- 包结构重组为 api / chars / segments / settings /
+  db / phonology / pipeline / tablegen / tools
+- 公共 API 改为 Config + Converter：配置不可变，数据库路径收进 Config，
+  Converter 持有并复用连接与分词器
+- 数据库层改为 PinyinRepository：schema v1（复合主键、去掉 id）、
+  内置库只读、CSV/Excel 适配器、旧库自动迁移
+- 新增“一”的变调：去声前阳平，阴平/阳平/上声前去声，
+  重叠动词轻声，多位数与数字串按惯例处理
+- 删除 DatabaseManager、generate_gana、generate_table、*_process 等旧模块
+
+> [!IMPORTANT]
+> BREAKING CHANGE: text_convert / pinyin_convert 改为关键字参数并接收 Config；
+> DatabaseManager 已移除，改用 PinyinRepository；旧版模块路径不再存在。
+
+## 1.0.4-alpha
+
+2026/11/26
+
+> 这是一个不公开发布的测试版本。
 
 - 构建与依赖管理由 Poetry 迁移到 uv：改用 `uv_build` 构建后端，依赖锁定文件改为 `uv.lock`。
 - 移除 `requirements.txt` 与 `poetry.lock`；开发依赖改由 `[dependency-groups] dev` 管理。
