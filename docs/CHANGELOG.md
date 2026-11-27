@@ -1,6 +1,43 @@
 # 更新日志
 
-## 未发布
+## 2.0.0
+
+2026/11/27
+
+> [!NOTE]
+> 1.0版用户敬请查看：[迁移指南](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md#4-从-10-迁移)。
+
+- ⚠️ 包结构重组为 `api` / `chars` / `segments` / `settings` / `db` / `phonology` /
+  `pipeline` / `tablegen` / `tools`；1.0 的 `core`、`*_process`、
+  `database` / `database_mngr`、`generate_*` 等模块全部移除。
+- ⚠️ 公共 API 改为 `Config` + `Converter`：配置不可变，数据库路径收进 `Config`；
+  `Converter` 懒加载并复用连接与分词器，顶层 `text_convert` / `pinyin_convert`
+  改为关键字参数。
+- ⚠️ 数据库层改为 `PinyinRepository`：schema v1（`(yinjie, tone)` 复合主键、
+  去掉 id、WITHOUT ROWID），内置库强制只读，旧库自动迁移。
+- 数据库写入更安全：`create()` 先校验全部记录，再写同目录临时文件并原子
+  替换；v0→v1 迁移使用 SAVEPOINT，失败回滚，并能恢复中断迁移；不再强制 WAL。
+- 转换路径默认以只读方式打开自定义库，schema 落后时迁移一次；输入中没有
+  汉字段时不再加载 jieba 与数据库。
+- 新增表格导入导出（`read_table` / `write_table`、`fill_csv` / `fill_xlsx`）
+  与 `tools.build_db` 重建工具；内置库共 74,700 条（415 音节 × 180 声调模式）。
+- 完善“一”的变调：去声前阳平，阴平/阳平/上声前去声；重叠动词中间读轻声，
+  并排除“一步一步”“一年一年”“一百一百”等数词/量词重叠；多位数与数字串
+  按惯例处理。
+- 按“亿 / 万 / 个”分级重写整数读法，修正跨级零：
+  `900005000` → `九亿零五千`，`100500000` → `一亿零五十万`。
+- `pinyin_convert` 输入中的 `0` 视作轻声 5；`error="keep"` 保留原音节。
+- `without_accent` 只清理生成的汉字段，`keep` 模式保留的原文不再被改写。
+- 默认 jieba 分词器改为进程内单例并抑制 INFO 日志，重复调用不再重复加载
+  词典；补充 `DatabaseUnavailableError` 等数据库异常层级，sqlite3 原生异常
+  统一包装后抛出。
+- 测试覆盖扩展到 465 项，`flake8` 0；CI 覆盖 Python 3.9–3.13。
+
+## 1.0.4-alpha
+
+2026/11/26
+
+> 这是一个不公开发布的测试版本。
 
 - 构建与依赖管理由 Poetry 迁移到 uv：改用 `uv_build` 构建后端，依赖锁定文件改为 `uv.lock`。
 - 移除 `requirements.txt` 与 `poetry.lock`；开发依赖改由 `[dependency-groups] dev` 管理。

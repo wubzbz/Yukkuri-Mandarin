@@ -129,6 +129,31 @@ wheels = [
 ]
 
 [[package]]
+name = "nodeenv"
+version = "1.11.1"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version < '3.10'",
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ab/27/79acfd3d6f526a4a16f3d209dedcf7b5bc1ea15c5bf2bbb82f2c2285057e/nodeenv-1.11.1.tar.gz", hash = "sha256:d7fa027c1df437bdd974b0502a8dc76fa1b3183e369ac9539602bc6bab9100ba", size = 99853, upload-time = "2026-10-29T20:54:04.261Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/40/35/a09e0b1dac4027e35b872e4f123a9f9e7bbc39e6424bdc9776920d3a6491/nodeenv-1.11.1-py2.py3-none-any.whl", hash = "sha256:bc0fb085d8ed0d67a6471892535f3d9b795eb911b7cd129d3a24967aab7a538f", size = 34473, upload-time = "2026-10-29T20:54:02.752Z" },
+]
+
+[[package]]
+name = "nodeenv"
+version = "1.12.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.11'",
+    "python_full_version == '3.10.*'",
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e6/99/d27cfc9518f49e4cbc25c683ec7cf8704a9d31311341c291c0e78ddf791b/nodeenv-1.12.0.tar.gz", hash = "sha256:4ea7f88339310afebc3253f2c7a91b94bacf97d73a36a5c108962abdfaca501e", size = 131292, upload-time = "2026-10-31T19:03:18.847Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2d/6a/8a9ac7d5e2f7cf53c459bfef90ebc17a2f8cd54b665af96799d4c534840e/nodeenv-1.12.0-py3-none-any.whl", hash = "sha256:80644d65c10cc2be12e3e4b54b3367ff288c7ad24ae75c2dcc65454fc7449d4d", size = 39442, upload-time = "2026-10-31T19:03:17.427Z" },
+]
+
+[[package]]
 name = "openpyxl"
 version = "3.1.5"
 source = { registry = "https://pypi.org/simple" }
@@ -270,6 +295,20 @@ wheels = [
 ]
 
 [[package]]
+name = "pyright"
+version = "1.1.414"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nodeenv", version = "1.11.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "nodeenv", version = "1.12.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e1/1b/244c7b710031ada80f27e579ec20d28a2285dfc318fed0339866b1047f12/pyright-1.1.414.tar.gz", hash = "sha256:523c0a97c60da6333234955c277730c9cf4f5bd6d5399e7b7d2b0fc5d3599524", size = 4154638, upload-time = "2026-09-10T12:26:53.181Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d7/ba/18b6e682ead424ad24bcc134339ae5d1b931cd9ae260540592a058a91279/pyright-1.1.414-py3-none-any.whl", hash = "sha256:2a6b4b3298c9eec174c5ed83bd338de6eee82df2992f3e1930e6199d381be36f", size = 6225049, upload-time = "2026-09-10T12:26:51.427Z" },
+]
+
+[[package]]
 name = "pytest"
 version = "8.4.2"
 source = { registry = "https://pypi.org/simple" }
@@ -395,7 +434,7 @@ wheels = [
 
 [[package]]
 name = "yukkuri-mandarin"
-version = "1.0.3"
+version = "2.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "pypinyin" },
@@ -418,6 +457,7 @@ dev = [
     { name = "flake8", version = "7.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "flake8", version = "7.4.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
     { name = "flake8", version = "7.5.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "pyright" },
     { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "pytest", version = "9.2.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
@@ -435,5 +475,6 @@ provides-extras = ["openpyxl", "jieba", "all"]
 [package.metadata.requires-dev]
 dev = [
     { name = "flake8", specifier = ">=7.0.0" },
+    { name = "pyright", specifier = ">=1.1.414" },
     { name = "pytest", specifier = ">=8.4.1" },
 ]

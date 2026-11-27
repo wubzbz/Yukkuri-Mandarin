@@ -3,8 +3,8 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/yukkuri-mandarin.svg)](https://pypi.org/project/yukkuri-mandarin)
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Type Checked](https://img.shields.io/badge/types-checked-green.svg)](https://mypy.readthedocs.io/)
-[![OS Independent](https://img.shields.io/badge/OS-independent-green.svg)](https://mypy.readthedocs.io/)
+[![Checked with pyright](https://microsoft.github.io/pyright/img/pyright_badge.svg)](https://microsoft.github.io/pyright/)
+![OS Independent](https://img.shields.io/badge/OS-independent-green.svg)
 
 <img width="1280" height="640" alt="欢迎来到油库里普通话！" src="https://github.com/user-attachments/assets/836f84ec-d0ba-4373-93e1-1318e44273dd" />
 
@@ -12,9 +12,11 @@
 
 [油库里普通话](https://pypi.org/project/yukkuri-mandarin/)（Yukkuri-Mandarin）是一个尝试使用日语的假名（五十音）系统来模拟拼读现代汉语普通话的Python包。
 
-“伪中国语”（偽中国語 / ぎちゅうごくご）是一种基于日语逻辑，但不使用日语中的假名，仅通过汉字来构建句子的语言游戏形式。反过来，仅使用日语假名来拼读普通话发音形成的“句子”或可称之为“伪日本语”。例如“油库里普通话”，使用平假名模拟其**音节**将是“よう　くう　りい　ぷう　とん　ふわ”。同时，基于日语高低音模式模拟普通话**声调**，得到类似“ <ins>よ</ins>/̅う̅く̅\\<ins>うりいぷう</ins>/̅と̅ん̅ふ̅\\<ins>わ</ins>”的结果。
+“伪中国语”（偽中国語 / ぎちゅうごくご）是一种基于日语逻辑，但不使用日语中的假名，仅通过汉字来构建句子的语言游戏形式。反过来，仅使用日语假名来拼读普通话发音形成的“句子”或可称之为“伪日本语”。例如“油库里普通话”，使用平假名模拟其**音节**将是“よう　くう　りい　ぷう　とん　ふあ”。同时，基于日语高低音模式模拟普通话**声调**，得到类似“ <ins>よ</ins>/̅う̅く̅\\<ins>うりいぷう</ins>/̅と̅ん̅ふ̅\\<ins>あ</ins>”的结果。
 
-目前，现有的普通话->假名转换工具大部分仅能实现[音节](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#1-基本概念)的模拟，而不能还原[声调](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#1-基本概念)。如果直接利用其输出的结果生成[油库里语音](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#2-什么是油库里语音)将得到类似“棒读”的机械发音。本项目在实现这些功能的基础上，借助语音合成软件的“[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#3-什么是音声记号)”，在输出结果中标记高低音形成声调拟音，使发音更加接近普通话。您可以将转换结果用于[AquesTalkPlayer](https://www.a-quest.com/products/aquestalkplayer.html)、[油库里MovieMaker](https://manjubox.net/ymm4/)和其他支持音声记号的语音合成工具，以实现中文油库里语音的合成。此外，本项目还提供了拼音数据库管理功能，如果您对某个字的发音不满意，或者某些生僻字缺少发音，您可以方便地自定义发音数据。祝您玩得愉快~
+目前，现有的普通话->假名转换工具大部分仅能实现[音节](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md#1-基本概念)的模拟，而不能还原[声调](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md#1-基本概念)。如果直接利用其输出的结果生成[油库里语音](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md#2-什么是油库里语音)将得到类似“棒读”的机械发音。本项目在实现这些功能的基础上，借助语音合成软件的“[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md#3-什么是音声记号)”，在输出结果中标记高低音形成声调拟音，使发音更加接近普通话。
+
+您可以将转换结果用于[AquesTalkPlayer](https://www.a-quest.com/products/aquestalkplayer.html)、[油库里MovieMaker](https://manjubox.net/ymm4/)和其他支持音声记号的语音合成工具，以实现中文油库里语音的合成。此外，本项目还提供了拼音数据库管理功能，如果您对某个字的发音不满意，或者某些生僻字缺少发音，您可以方便地自定义发音数据。祝您玩得愉快~
 
 > 让我们说中文！
 
@@ -113,11 +115,11 @@ A: 请使用[拼音数据库管理](https://github.com/wubzbz/Yukkuri-Mandarin/b
 
 #### Q: 发音没有声调，而且断断续续？
 
-A: 请先阅读[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md)。同时，确认您使用的语音合成软件是否支持[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#3-什么是音声记号)。
+A: 请先阅读[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md)。同时，确认您使用的语音合成软件是否支持[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md#3-什么是音声记号)。
 
 #### Q: 为什么无法生成油库里语音？
 
-A: 请首先检查转换后的假名拟音中是否包含非法字符。具体请查看[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md/#三注意事项)。
+A: 请首先检查转换后的假名拟音中是否包含非法字符。具体请查看[使用方法介绍](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md#五注意事项)。
 
 #### Q: 我遇到了问题/我有一个建议/我需要某个功能
 
@@ -126,13 +128,30 @@ A: 请在[issue](https://github.com/wubzbz/Yukkuri-Mandarin/issues)板块提出�
 
 ## 更新日志
 
-### 1.0.3
+### 2.0.0（重大更新）
 
-- 优化了对“不”字变调的支持。例如：“不对” -> "bu2 dui4"。
-- 订正了油库里语音的介绍。
-- 增加了面向ゆっくも！的使用说明。
-- 修复了`modify_consecutive_threes()`潜在的数组越界漏洞。
-- CI工作流不再在push时触发（避免重复）。
+> [!NOTE]
+> 1.0版用户敬请查看：[迁移指南](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md#4-从-10-迁移)。
+
+- ⚠️ 包结构重组为 `api` / `chars` / `segments` / `settings` / `db` / `phonology` /
+  `pipeline` / `tablegen` / `tools`；1.0 的 `core`、`*_process`、
+  `database` / `database_mngr`、`generate_*` 等模块全部移除。
+- ⚠️ 公共 API 改为 `Config` + `Converter`：配置不可变，数据库路径收进 `Config`；
+  `Converter` 懒加载并复用连接与分词器，顶层 `text_convert` / `pinyin_convert`
+  改为关键字参数。
+- ⚠️ 数据库层改为 `PinyinRepository`：schema v1（`(yinjie, tone)` 复合主键、
+  去掉 id、WITHOUT ROWID），内置库强制只读，旧库自动迁移。
+- 新增表格导入导出（`read_table` / `write_table`、`fill_csv` / `fill_xlsx`）
+  与 `tools.build_db` 重建工具。
+- 完善“一”的变调：去声前阳平，阴平/阳平/上声前去声；重叠动词中间读轻声，
+  并排除“一步一步”“一年一年”“一百一百”等数词/量词重叠；多位数与数字串
+  按惯例处理。
+- 按“亿 / 万 / 个”分级重写整数读法，修正跨级零：
+  `900005000` → `九亿零五千`，`100500000` → `一亿零五十万`。
+- `pinyin_convert` 输入中的 `0` 视作轻声 5；`error="keep"` 保留原音节。
+- `without_accent` 只清理生成的汉字段，`keep` 模式保留的原文不再被改写。
+- 补充 `DatabaseUnavailableError` 等数据库异常层级，sqlite3 原生异常
+  统一包装后抛出。
 
 查看[更新历史](./docs/CHANGELOG.md)。
 

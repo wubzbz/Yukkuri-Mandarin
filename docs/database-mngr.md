@@ -1,368 +1,264 @@
 # 如何管理拼音数据库
 
-## 0. 目录
+> [!NOTE]
+> 本文档适用于 **2.0** 版以上。旧版文档见 [archive/1.0/database-mngr.md](archive/1.0/database-mngr.md)。
 
-- [建立数据库](#1-建立数据库)
-- [增加/修改拼音数据](#2-增加修改拼音数据)
-- [查询拼音数据](#3-查询拼音数据)
-- [删除拼音数据](#4-删除拼音数据)
-- [批量操作](#5-批量操作)
+## 0. 开始之前
 
+本包内置了一个默认数据库，它是基于一定的[规则](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md)和作者的喜好制定的。**内置库只能读取，不能修改。**（允许用户直接修改包的内容通常不是一个好做法）
 
-## 1. 建立数据库
+因此，如果您发现内置数据库有**错误**，请提交 Issue，我们一起看看是不是这样。如果您只是对我的方案不满意，想改发音，完全可以建立属于您的自定义数据库。
 
-对拼音数据库的所有操作方法都由数据库管理类`DatabaseManager`提供。通常情况下，使用默认方式创建`DatabaseManager`的实例会指向默认数据库，就像这样：
+**一行数据**（有时我们也说“一条记录”, Entry）指的是**一个字在一种上下文里的读法。** 同一个字在不同词里可能对应多行数据（后面会详细解释）。
 
-```python
-import yukkurimandarin as ym
+下面，我们就按“改一个字的发音”这个最常见的需求，一步一步演示。
 
-dm = ym.DatabaseManager()
+## 1. 一行数据长什么样
+
+数据库里每一行有三个字段：
+
+| 字段 | 含义 | 例子 |
+|---|---|---|
+| 拼音 | 这个字的拼音，不带声调 | `shang` |
+| 声调 | 三个数字，表示前、本、后的声调 | `043` |
+| 假名 | 这个字要念成的假名（可以带音声记号） | `さ'あん` |
+
+### 声调为什么是三个数字
+
+因为一个字的假名写法与它前一个和后一个字的声调有关（详见[声调的处理](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md#4-声调的处理)）：
+
+```text
+声调 = 前一个字的声调 + 当前字的声调 + 后一个字的声调
+          0～5            1～5          0～5
 ```
 
-`DatabaseManager`的实例可以作为参数`pinyin_database`提供给函数`text_convert()`以及`pinyin_convert()`，而它们将会基于这个数据库查询结果。
+- `0` 表示“这边没有字”（比如句首、句尾）。
+- `1`～`5` 分别是一声、二声、三声、四声、轻声。
 
-如果您想新建一个数据库而不是使用默认数据库的话，可以这样做：
+以“上海”为例：
 
-```python
-import yukkurimandarin as ym
+| 字 | 拼音 | 前 | 本 | 后 | 声调 |
+|---|---|---|---|---|---|
+| 上 | shang | 0（句首） | 4 | 3 | `043` |
+| 海 | hai | 4 | 3 | 0（句尾） | `430` |
 
-dm = ym.DatabaseManager("my_database.db")
-```
+而“上海人”里的“海”字后面多了一个“人”（二声），所以它对应另一行数据：
 
-其中`my_database.db`是您想要建立的数据库的路径。如果这个文件不存在，对它操作前将创建一个空数据库；如果它存在，就可以通过`DatabaseManager`的实例`dm`对它进行操作。请确保数据库文件的后缀为`.db`。
+| 字 | 拼音 | 前 | 本 | 后 | 声调 |
+|---|---|---|---|---|---|
+| 海 | hai | 4 | 3 | 2 | `432` |
 
-
-## 2. 增加/修改拼音数据
-
-```python
-def add_pinyin(yinjie: str, tone: str, hiragana: str, report: bool = True) -> bool
-```
-
-一条拼音数据由3个基本元素构成：音节、声调和假名。
-
-#### `yinjie`: 音节（字符串）
-
-音节是不含声调的拼音，例如“hǎo”的音节为“hao”。
-
-#### `tone`: 声调（字符串）
-
-声调由3位0-5的数字组成，第一位是前一个字的声调，第二位是当前字的声调，第三位是后一个字的声调。0表示前面或后面没有字，1-5分别表示普通话四声和轻声。
-
-#### `hiragana`: 假名拟音（字符串）
-
-假名则是对应的假名拟音（含音声记号）。
-
-#### `report`: 输出报告（布尔）
-
-是否在终端输出报告信息。
-
-请使用`DatabaseManager`的方法`add_pinyin`进行增加，例如：
-
-```python
-import yukkurimandarin as ym
-
-dm = ym.DatabaseManager("my_database.db")
-
-dm.add_pinyin("giao", "040", "ぎゃ'お")
-```
-
-上述操作在终端输出的信息将类似于
-
-```
-@ 2025-08-31 09:55:11 -- 操作:增加拼音数据 成功
-|------|------|---------|
-| 音节 | 声调 | 平假名  |
-|------|------|---------|
-| giao | 040  | ぎゃ'お |
-|------|------|---------|
-```
-
-表格的显示效果因终端是否使用等宽字体而异。如果使用了不合法的声调，比如长度不等于3位、当前字的声调是0等，操作将失败：
-
-```
-@ 2025-08-31 10:04:12 -- 操作:增加拼音数据 失败
-发生错误：声调 104 格式错误！
-```
-
-对已经存在于数据库中的拼音数据再次进行`add_pinyin`操作将修改它的值。
-
-
-## 3. 查询拼音数据
-
-```python
-def search_by_pinyin(yinjie: str, 
-                     tone: str = "***", 
-                     report: bool = True) -> List[Tuple[str, str, str]]
-```
-
-查询时，通过音节和声调查找对应的假名拟音。
-
-#### `yinjie`: 音节（字符串）
-
-音节是不含声调的拼音，例如“hǎo”的音节为“hao”。
-
-#### `tone`: 声调（字符串）
-
-声调由3位0-5的数字组成，第一位是前一个字的声调，第二位是当前字的声调，第三位是后一个字的声调。0表示前面或后面没有字，1-5分别表示普通话四声和轻声。`*`是声调的通配符，也就是说，当某一位声调为`*`时，所有匹配的记录都会被选中。此参数的默认值是`***`，因此当您不填写它时，将会得到所有音节为`yinjie`的结果。
-
-#### `report`: 输出报告（布尔）
-
-是否在终端输出报告信息。
-
-#### 返回值：搜索结果（字符串三元组列表）
-
-搜索结果为按照`(yinjie, tone, hiragana)`格式组织的数据条目列表。
-
-使用示例：
-
-```python
-import yukkurimandarin as ym
-
-dm = ym.DatabaseManager("my_database.db")
-
-dm.add_pinyin("giao", "124", "/ぎゃお")
-dm.add_pinyin("giao", "144", "ぎゃ/お")
-dm.add_pinyin("giao", "140", "ぎゃ'お")
-
-# 使用tone的默认值（全通配）
-dm.search_by_pinyin("giao")
-# 精确指定tone
-dm.search_by_pinyin("giao", "124")
-# 使用通配符
-dm.search_by_pinyin("giao", "1*4")
-dm.search_by_pinyin("giao", "14*")
-```
-
-
-## 4. 删除拼音数据
-
-```python
-def delete_pinyin(yinjie: str, tone: str, report: bool = True) -> bool
-```
-
-通过音节和声调删除对应的假名拟音。
-
-#### `yinjie`: 音节（字符串）
-
-音节是不含声调的拼音，例如“hǎo”的音节为“hao”。
-
-#### `tone`: 声调（字符串）
-
-声调由3位0-5的数字组成，第一位是前一个字的声调，第二位是当前字的声调，第三位是后一个字的声调。0表示前面或后面没有字，1-5分别表示普通话四声和轻声。`*`是声调的通配符，也就是说，当某一位声调为`*`时，所有匹配的记录都会被删除。
-
-#### `report`: 输出报告（布尔）
-
-是否在终端输出报告信息。
-
-#### 返回值：操作结果（布尔）
-
-删除操作是否成功。
-
-使用示例：
-
-```python
-import yukkurimandarin as ym
-
-dm = ym.DatabaseManager("my_database.db")
-
-dm.add_pinyin("giao", "124", "/ぎゃお")
-dm.add_pinyin("giao", "144", "ぎゃ/お")
-dm.add_pinyin("giao", "140", "ぎゃ'お")
-
-# 精确指定tone
-dm.delete_pinyin("giao", "124")
-# 使用通配符
-dm.delete_pinyin("giao", "1*4")
-dm.delete_pinyin("giao", "14*")
-# 使用全通配
-dm.delete_pinyin("giao", "***")
-```
-
-
-## 5. 批量操作
-
-上述方法适合进行小规模的增删查改操作，但当需要批量操作大量数据时，就会变得十分繁琐。因此，您可以选择将整个数据库导出到excel或csv文档，使用表格编辑软件对文档进行操作。编辑好的文档可以导入到数据库中。
-
-### 5.1 生成文档
-
-为了方便您了解数据库认可的xlsx和csv文档格式，同时帮助您通过导入文档方式构建数据库，本项目提供了利用内置函数生成数据文档的功能。它们的使用方法非常简单：
-
-```python
-def fill_csv(file_path: Optional[str] = None) -> None
-```
-
-```python
-def fill_xlsx(file_path: Optional[str] = None) -> None
-```
+所以，**同一个字在不同上下文里，可能对应不同的行**。改之前先确认您想改的是哪种情况。
 
 > [!NOTE]
-> 使用`fill_xlsx()`前请确保`openpyxl`库已经安装。
+> 声调填的是**实际读出来的调**。比如“你好”的“你”会变调读成 ní，所以给这里的“你”字用的声调不是 `033`，而是 `023`。不确定时，可以先按下一节的方法 `get` 出来看看。
 
-#### `file_path`: 生成文件的路径（字符串）
+## 2. 改一个字的发音
 
-设置您希望文件生成于何处。如果留空或为`None`，则导出到默认位置。
+### 第一步：复制内置库
 
-使用示例如下：
-
-```python
-import yukkurimandarin as ym
-
-ym.fill_csv("my_filename.csv")
-ym.fill_xlsx("my_filename.xlsx")
-```
-
-您可以自由地将导出的文件路径设置为您想要的，或者直接留空参数，导出到默认位置也可以。接着，您就可以使用合适的表格编辑工具打开生成的文档，进行查看、修改以及用于导入数据库了。
-
-
-### 5.2 导出数据库到csv/xlsx文档
-
-使用前文所述的`search_by_pinyin()`方法检查数据库中的特定拼音数据虽然快捷，但当需要批量查看、修改数据时，操作将会变得十分繁琐。因此，您可以将整个数据库导出到一个表格文档中，再用您的表格编辑软件进行查看、修改。
+新建一个 Python 文件（例如 `change.py`），保存下面的代码并运行：
 
 ```python
-def export_to_csv(file_path: Optional[str] = None, report: bool = True) -> bool
+import shutil
+from pathlib import Path
+import yukkurimandarin
+
+source = Path(yukkurimandarin.__file__).parent / "data" / "yinjie_database.db"
+shutil.copy(source, "my_database.db")
+print("已复制到 my_database.db")
 ```
 
+现在当前目录下多了一个 `my_database.db`，它是可写的。
+
+### 第二步：确认要改哪一行
+
+先查一下原来的值。假设您想改“上海”的“上”：
+
 ```python
-def export_to_excel(file_path: Optional[str] = None, report: bool = True) -> bool
+from yukkurimandarin import PinyinRepository
+
+with PinyinRepository.open("my_database.db") as repo:
+    print(repo.get("shang", "043"))
 ```
+
+应该能看到类似：
+
+```text
+PinyinEntry(yinjie='shang', tone='043', hiragana="さ'あん")
+```
+
+如果打印的是 `None`，说明没有找到对应条目，可能拼音或声调写错了。
+
+也可以一次性列出这个拼音的所有行，再挑出您需要的。只需省略声调参数：
+
+```python
+with PinyinRepository.open("my_database.db") as repo:
+    for entry in repo.search("shang"):
+        print(entry.tone, entry.hiragana)
+```
+
+### 第三步：修改假名
+
+```python
+from yukkurimandarin import PinyinEntry, PinyinRepository
+
+with PinyinRepository.open("my_database.db") as repo:
+    repo.upsert(PinyinEntry("shang", "043", "しゃ'ん"))
+```
+
+`upsert` 的意思是“有这一行就改，没有就加”。上面的例子把“上”在“上海”里的假名改成了 `しゃ'ん`。
+
+> [!TIP]
+> 这个单引号 `'` 是“音声记号”。音声记号的写法见[发音规则](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md#3-什么是音声记号)。
+
+### 第四步：使用新数据库
+
+```python
+from yukkurimandarin import Config, text_convert
+
+# 先在配置中指定数据库路径：
+config = Config(database="my_database.db")
+
+print(text_convert("上海", config=config))
+```
+
+输出应该变成了：
+
+```text
+しゃ'んはい
+```
+
+大功告成！
+
+> [!TIP]
+> “改了以后没生效”很可能是因为您忘了设置 `config` 的数据库路径，导致 `text_convert` 还是会用默认的内置库。
+
+## 3. 批量修改（用表格）
+
+只改一两个字时，用上一节的方法最省事。但假如要改很多字，可以把整份数据导出成表格，用 Excel 或文本编辑器改完再导回去。
+
+### 导出
+
+```python
+from yukkurimandarin import PinyinRepository
+from yukkurimandarin.db import write_table
+
+with PinyinRepository.open() as repo:   # 不传路径 = 内置库，只读
+    write_table(repo.iter_all(), "all.csv")
+```
+
+这会生成一个 `all.csv`，里面是内置库的全部数据。
 
 > [!NOTE]
-> 使用`export_to_excel()`前请确保`openpyxl`库已经安装。
+> 假如您安装了可选依赖 `openpyxl`，您可以导出为 `.xlsx` 文档，然后在 Excel 中处理。
 
-#### `file_path`: 生成文件的路径（字符串）
+### 修改
 
-设置您希望文件生成于何处。如果留空或为`None`，则导出到默认位置。
+用表格软件打开 `all.csv`，只改您想改的那几行，保存时保持表头不变。
 
-使用示例：
+表头必须是：
 
-```python
-import yukkurimandarin as ym
-
-dm = ym.DatabaseManager("my_database.db")
-
-dm.add_pinyin("an", "115", "あん")
-dm.add_pinyin("an", "132", "'あん")
-dm.add_pinyin("an", "144", "あ/ん")
-
-dm.export_to_csv("my_table.csv")
-dm.export_to_excel("my_table.xlsx")
-```
-
-请查看导出的`my_table.csv`以及`my_table.xlsx`（如果安装了`openpyxl`），其内容将类似：
-
-```
+```text
 拼音,声调,平假名
-an,115,あん
-an,132,'あん
-an,144,あ/ん
 ```
 
-
-### 5.3 从csv/xlsx文档导入数据
-
-拼音数据库可以从现有的csv或excel表格中批量导入数据。
+### 用改好的表格新建数据库
 
 ```python
-def import_from_csv(file_path: Optional[str] = None, report: bool = True) -> bool
+from yukkurimandarin import PinyinRepository
+from yukkurimandarin.db import read_table
+
+entries = read_table("all.csv")
+PinyinRepository.create("my_database.db", entries, overwrite=True)
 ```
 
-```python
-def import_from_excel(file_path: Optional[str] = None, report: bool = True) -> bool
-```
+`overwrite=True` 表示如果 `my_database.db` 已存在就覆盖它。如果担心误修改已存在的文件，请将其设置为 `False`。
 
 > [!NOTE]
-> 使用`import_from_excel()`前请确保`openpyxl`库已经安装。
+> 假如您安装了可选依赖 `openpyxl`，您可以从 `.xlsx` 文档中读取数据。
 
-#### `file_path`: 生成文件的路径（字符串）
+### 只把改动的几行合并进现有库
 
-设置您希望文件生成于何处。如果留空或为`None`，则从默认位置导入。
-
-使用方法示例（假设my_table.csv和my_table.xlsx存在且格式正确）：
+如果您不想每次导整张表，也可以只准备改动过的行：
 
 ```python
-import yukkurimandarin as ym
+from yukkurimandarin import PinyinRepository
+from yukkurimandarin.db import read_table
 
-dm = ym.DatabaseManager("my_database.db")
-
-dm.import_from_csv("my_table.csv")
-dm.import_from_excel("my_table.xlsx")
+with PinyinRepository.open("my_database.db") as repo:
+    repo.upsert_many(read_table("my_changes.csv"))
 ```
 
-推荐您使用[5.1节](#51-生成文档)和[5.2节](#52-导出数据库到csvxlsx文档)中提到的生成/导出的表格文档进行导入。否则的话，请确保将要导入的表格文档的格式符合以下要求：
+`my_changes.csv` 只需要包含改过的行，表头同样要写全。
 
-- 文件后缀：csv文档为`.csv`，excel文档为`.xlsx`；
-- 必须包含3列数据，表头依次为"拼音", "声调", "平假名"；
-- 当excel文档包含多个工作表时，只会尝试从当前活动工作表导入数据。
+> [!NOTE]
+> 导入表格时会逐行检查。只要有一行的格式不对（比如声调不是三位、声调中间是 0），就会报错并告诉您是第几行；改好那一行再重新导入即可。
 
-如果某行数据存在格式错误、值缺失等问题，将会导入失败，但不会影响其他行数据的导入。例如准备以下csv文档并尝试导入数据库：
-
-```
-拼音,声调,平假名
-an,115,あん
-an,132,
-an,104,あ/ん
-```
-
-其中第2行数据存在缺失、第3行数据的声调格式错误。此时导入将得到类似以下信息：
-
-```
-@ 2025-09-12 11:58:08 -- 操作:从csv导入拼音数据库 失败
-第 2 行: 缺少必填字段
-第 3 行: 声调104格式错误
-导入完成。成功: 1, 失败: 2
-```
-
-从提示信息中，您可以轻松定位导入失败的数据所在的行数以及问题描述，从而精准修改。即使第2、3行导入失败，也不会影响其他正确的数据行（如第1行）的导入。
-
-
-### 5.4 使用默认路径的最佳实践
-
-下面提供一个检修数据库的实践案例。
-
-#### 步骤一：导出表格
+## 4. 查询和删除
 
 ```python
-import yukkurimandarin as ym
+from yukkurimandarin import PinyinRepository
 
-dm = ym.DatabaseManager("my_database.db")
+with PinyinRepository.open("my_database.db") as repo:
+    # 精确查一行
+    entry = repo.get("hang", "220")
+    print(entry)
 
-dm.export_to_csv()
+    # 查某个拼音的所有行（可以用 * 通配声调）
+    for entry in repo.search("hang", "2*0"):
+        print(entry.tone, entry.hiragana)
+
+    # 删除一行 / 删除一个拼音的所有行
+    repo.delete("hang", "220")
+    repo.delete_by_yinjie("hang")
 ```
 
-连接您希望进行操作的数据库，例如`my_database.db`。将其中的内容导出到默认位置`yinjie_table.csv`。
+声调中的 `*` 表示“这一位任意”，比如 `"2*0"` 只匹配第一位是 2、第三位是 0 的声调。
 
-#### 步骤二：编辑表格
+## 5. 常见问题
 
-您只需在当前目录中找到并打开表格文档`yinjie_table.csv`并进行编辑，然后保存文档。
+**改了没生效？**
 
-#### 步骤三：重新导入
+- 最常见的原因：调用 `text_convert` 时忘了传 `config=Config(database="my_database.db")`。
+- 拼音或声调和 `get` 出来的不完全一致，`upsert` 就变成了新增一行，而不是修改原来的行。
+- 文件路径不对，改的是另一份 `.db`。
 
-```python
-import yukkurimandarin as ym
+**只改了自定义库，其他字没了？**
 
-dm = ym.DatabaseManager("my_database.db")
+如果您是从空库开始的，那库里只有您加的那几行，其他字自然查不到。请用第 2 节“复制内置库”的方法，或者第 3 节导入完整表格。
 
-dm.import_from_csv()
+**报“只读数据库”/ `ReadOnlyDatabaseError`？**
+
+内置库不能写。请复制一份再改；`PinyinRepository.open("内置库路径")` 会强制只读。
+
+**报“声调格式错误”？**
+
+声调必须是三个数字：前、本、后；每一位只能是 0～5，并且**第二位不能是 0**。
+
+**导入表格报错？**
+
+看报错里的行号，检查那一行：
+- 表头是不是 `拼音,声调,平假名`（也接受 `音节`）；
+- 三列是不是都有（假名可以为空）；
+- 声调是不是三位、第二位不是 0。
+
+**用 xlsx 时提示缺少 `openpyxl`？**
+
+安装可选依赖：
+
+```bash
+pip install yukuri-mandarin[openpyxl]
 ```
 
-将编辑好的文档重新导入数据库。如果您不放心，可再次导出数据至文档进行检查。
+只改 CSV 的话不需要它。
 
+**旧版的 `DatabaseManager` 呢？**
 
-### 5.5 涉及删除的批量操作
+2.0 已经移除。按本文的 `PinyinRepository` 用法即可；需要看旧写法时可以查阅[1.0 文档](archive/1.0/database-mngr.md)。
 
-请您注意，本节所述的方法只便利了数据库的批量增加、查询、修改操作。从文档导入数据时，各种情况的操作结果如下：
+## 6. 进阶用法
 
-- 数据库中不存在，而文档中存在的数据：在数据库中新增数据；
-- 数据库中存在，而文档中也存在相同的数据：保持原样；
-- 数据库中存在，而文档中存在不相同的数据：修改数据库中的数据；
-- 数据库中存在，而文档中不存在的数据：保持原样。
-
-敬请注意最后一条规则，这意味着您不可以通过“导出文档—删除数据—重新导入”的方式实现数据库的删除操作。举例说明，假设数据库内原有A、B、C三条数据；导出文档后，删除文档中的数据B，得到只含数据A、C的文档；将此文档导入数据库将不会导致数据库中的B删除。
-
-因此，建议您在删除少量数据时使用`delete_pinyin()`。在批量删除数据时，请按以下步骤操作：
-
-1. 将数据库中的数据导出到表格文档；
-2. 在表格文档中删除不需要的数据；
-3. 新建一个`DatabaseManager`的实例，指向一个新数据库；
-4. 将文档导入到新数据库中；
-5. 如果您确定不再需要原来的数据库，手动删除它。
+- `repo.replace_all(entries)`：用一份完整表格**替换**整个库；表格里删掉的行也会从数据库删除。只想合并修改时用 `upsert_many`。
+- `yukkurimandarin.fill_csv("template.csv")` / `yukkurimandarin.fill_xlsx("template.xlsx")`：按当前发音规则生成一份完整表格（74,700 行），可以用来查看格式或对比。
+- `build_database(...)`（`from yukkurimandarin.tools.build_db import build_database`）：按规则重建整个数据库，属于开发/维护工具，普通改发音不需要用到。

@@ -1,3 +1,8 @@
+__pycache__
+dist
 *.csv
 *.xlsx
 *.old
+*.db-wal
+*.db-shm
+/yinjie_database.db

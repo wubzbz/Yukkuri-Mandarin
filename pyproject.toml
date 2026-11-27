@@ -1,6 +1,6 @@
 [project]
 name = "yukkuri-mandarin"
-version = "1.0.3"
+version = "2.0.0"
 description = "将汉语转换为“伪日本语”."
 keywords = ["mandarin", "普通话", "hiragana", "平仮名"]
 authors = [
@@ -47,8 +47,17 @@ module-root = ""
 dev = [
     "pytest>=8.4.1",
     "flake8>=7.0.0",
+    "pyright>=1.1.414",
 ]
 
 [tool.pytest.ini_options]
-pythonpath = "yukkurimandarin"
+pythonpath = "."
 testpaths = "tests"
+
+[tool.pyright]
+include = ["yukkurimandarin", "tests", "tools"]
+exclude = ["**/__pycache__", "**/build", "**/dist"]
+pythonVersion = "3.9"
+typeCheckingMode = "basic"
+venvPath = "."
+venv = ".venv"

@@ -1,29 +1,36 @@
-# Yukkuri-Mandarin
+"""Yukkuri-Mandarin：用假名（五十音）模拟拼读现代汉语普通话。"""
+
+from __future__ import annotations
 
 try:
-    from importlib.metadata import version
-    __version__ = version("yukkuri-mandarin")
+    from importlib.metadata import PackageNotFoundError, version
 except ImportError:
     __version__ = "dev"
+else:
+    try:
+        __version__ = version("yukkuri-mandarin")
+    except PackageNotFoundError:
+        __version__ = "dev"
+
+from .api import Converter, pinyin_convert, text_convert
+from .db import PinyinEntry, PinyinRepository
+from .settings import DEFAULT_CONFIG, Config, NonHanziModes
+from .tablegen import fill_csv, fill_xlsx
 
 __title__ = "yukkurimandarin"
 __author__ = "wubzbz"
 __license__ = "MIT"
 __copyright__ = "Copyright (c) 2025 wubzbz"
+
 __all__ = [
-    "text_convert",
-    "pinyin_convert",
-    "DatabaseManager",
-    "fill_xlsx",
-    "fill_csv",
+    "Converter",
+    "Config",
+    "DEFAULT_CONFIG",
     "NonHanziModes",
-    ]
-
-from yukkurimandarin.core import text_convert,pinyin_convert
-from yukkurimandarin.database_mngr import DatabaseManager
-from yukkurimandarin.generate_table import fill_csv, fill_xlsx
-from yukkurimandarin.settings import NonHanziModes
-
-
-
-
+    "PinyinEntry",
+    "PinyinRepository",
+    "fill_csv",
+    "fill_xlsx",
+    "pinyin_convert",
+    "text_convert",
+]

@@ -1,39 +1,104 @@
-# 定义参数对象
+"""配置对象。
 
-from typing import Union, Callable
+`Config` 是不可变的值对象；运行时资源（数据库连接、分词器）由
+`api.Converter` 持有，不放进配置里。
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Callable, Optional, Union
+
+# 处理模式：字符串（ignore / keep / replace）或自定义函数
+Mode = Union[str, Callable[[str], str]]
 
 
+@dataclass(frozen=True)
 class NonHanziModes:
+    """设置如何处理各类非汉字字符。
+
+    细分类别未指定时，回落到 ``global_mode`` / ``global_replace``。
+
+    Args:
+        global_mode: 默认处理模式，见各类别的 ``*_mode``。
+        global_replace: 默认替换文本。
+        en_mode: 英文字母的处理模式。
+        ja_mode: 日文假名的处理模式。
+        pc_mode: 标点符号的处理模式。
+        other_mode: 其他字符的处理模式。
+
+    模式取值：
+
+        - ``"ignore"``：忽略该片段
+        - ``"keep"``：保留原样
+        - ``"replace"``：替换为对应的 ``*_replace``
+        - 可调用对象：以片段为参数，返回替换文本
     """
-    设置如何处理各类非汉字字符
 
-    参数种类:
-        mode: 处理模式
+    global_mode: Mode = "ignore"
+    global_replace: str = ""
+    en_mode: Optional[Mode] = None
+    en_replace: Optional[str] = None
+    ja_mode: Optional[Mode] = None
+    ja_replace: Optional[str] = None
+    pc_mode: Optional[Mode] = None
+    pc_replace: Optional[str] = None
+    other_mode: Optional[Mode] = None
+    other_replace: Optional[str] = None
 
-            - `ignore`: 忽略掉非汉字片段
-            - `keep`: 保留非汉字片段
-            - `replace`: 用自定义字符串代替非汉字片段
-            - 可调用的函数：用于处理非汉字片段
+    def __post_init__(self) -> None:
+        """把未指定的细分类别回落到全局设置。"""
+        for prefix in ("en", "ja", "pc", "other"):
+            mode_attr = f"{prefix}_mode"
+            replace_attr = f"{prefix}_replace"
+            if getattr(self, mode_attr) is None:
+                object.__setattr__(self, mode_attr, self.global_mode)
+            if getattr(self, replace_attr) is None:
+                object.__setattr__(self, replace_attr, self.global_replace)
 
-        replace: 仅当mode为 `replace` 时此参数有效。将所有非汉字片段替换为该字符串。
+    @property
+    def en(self) -> "tuple[Mode, str]":
+        """英文片段的处理模式与替换文本（已回落到全局值）。"""
+        assert self.en_mode is not None
+        assert self.en_replace is not None
+        return self.en_mode, self.en_replace
+
+    @property
+    def ja(self) -> "tuple[Mode, str]":
+        """日语假名片段的处理模式与替换文本（已回落到全局值）。"""
+        assert self.ja_mode is not None
+        assert self.ja_replace is not None
+        return self.ja_mode, self.ja_replace
+
+    @property
+    def pc(self) -> "tuple[Mode, str]":
+        """标点片段的处理模式与替换文本（已回落到全局值）。"""
+        assert self.pc_mode is not None
+        assert self.pc_replace is not None
+        return self.pc_mode, self.pc_replace
+
+    @property
+    def other(self) -> "tuple[Mode, str]":
+        """其他字符片段的处理模式与替换文本（已回落到全局值）。"""
+        assert self.other_mode is not None
+        assert self.other_replace is not None
+        return self.other_mode, self.other_replace
+
+
+@dataclass(frozen=True)
+class Config:
+    """转换配置。
+
+    Args:
+        non_hanzi: 非汉字片段的处理方式；None 表示使用库的默认处理
+            （清洗标点、归一化假名，其余类别忽略）。
+        database: 拼音数据库路径；None 表示随包分发的内置只读库。
     """
-    def __init__(self, 
-                 global_mode: Union[str, Callable[[str], str]] = "ignore",
-                 global_replace: str = "",
-                 en_mode: Union[str, Callable[[str], str], None] = None,
-                 en_replace: Union[str, None] = None,
-                 ja_mode: Union[str, Callable[[str], str], None] = None,
-                 ja_replace: Union[str, None] = None,
-                 pc_mode: Union[str, Callable[[str], str], None] = None,
-                 pc_replace: Union[str, None] = None,
-                 other_mode: Union[str, Callable[[str], str], None] = None,
-                 other_replace: Union[str, None] = None,) -> None:
-        
-        self.en_mode = en_mode if en_mode is not None else global_mode
-        self.en_replace = en_replace if en_replace is not None else global_replace
-        self.ja_mode = ja_mode if ja_mode is not None else global_mode
-        self.ja_replace = ja_replace if ja_replace is not None else global_replace
-        self.pc_mode = pc_mode if pc_mode is not None else global_mode
-        self.pc_replace = pc_replace if pc_replace is not None else global_replace
-        self.other_mode = other_mode if other_mode is not None else global_mode
-        self.other_replace = other_replace if other_replace is not None else global_replace
+
+    non_hanzi: Optional[NonHanziModes] = None
+    database: Optional[Union[str, Path]] = None
+
+
+#: 默认配置，可直接使用或用 dataclasses.replace() 派生
+DEFAULT_CONFIG = Config()
