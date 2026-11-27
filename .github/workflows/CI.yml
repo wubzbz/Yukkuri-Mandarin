@@ -37,6 +37,9 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
+    - name: Check docs links
+      run: uv run python tools/check_docs.py
+
     - name: Type-check with Pyright
       run: uv run pyright
 

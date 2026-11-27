@@ -55,7 +55,7 @@ pythonpath = "."
 testpaths = "tests"
 
 [tool.pyright]
-include = ["yukkurimandarin", "tests"]
+include = ["yukkurimandarin", "tests", "tools"]
 exclude = ["**/__pycache__", "**/build", "**/dist"]
 pythonVersion = "3.9"
 typeCheckingMode = "basic"
