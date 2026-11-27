@@ -24,7 +24,7 @@
   - `jieba>=0.42.1`：分词，仅用于多音字消歧。
   - `openpyxl>=3.1.5`：Excel（xlsx）导入导出。
   - 安装：`pip install yukkuri-mandarin[all]` / `[jieba]` / `[openpyxl]`。
-- 开发依赖：`pytest>=8.4.1`、`flake8>=7.0.0`（`[dependency-groups] dev`）。
+- 开发依赖：`pytest>=8.4.1`、`flake8>=7.0.0`、`pyright>=1.1.414`（`[dependency-groups] dev`）。
 - `uv.lock` 是唯一的依赖锁定文件；不再维护 `requirements.txt` / `poetry.lock`。
 
 ## 3. 常用命令
@@ -42,6 +42,12 @@ uv run pytest tests/test_sandhi.py
 # lint（与 CI 一致）
 uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+# 类型检查
+uv run pyright
+
+# 检查 README / docs 的仓库内链接与锚点
+uv run python tools/check_docs.py
 
 # 构建发行文件（生成到 dist/）
 uv build
@@ -63,7 +69,7 @@ Yukkuri-Mandarin/
 ├── LICENSE                   # MIT
 ├── AGENTS.md                 # 本文件
 ├── .github/workflows/
-│   ├── CI.yml                # PR 到 main：flake8 + pytest（3 OS × Python 3.9–3.13）
+│   ├── CI.yml                # PR 到 main：flake8 + 文档链接 + Pyright + pytest（3 OS × Python 3.9–3.13）
 │   └── CD.yml                # PR 合并到 main：发布 PyPI 与 GitHub Release
 ├── docs/                     # 中文文档
 │   ├── usage.md              # 使用方法
@@ -103,6 +109,8 @@ Yukkuri-Mandarin/
 │   │   └── table.py          # valid_tones、fill_csv / fill_xlsx
 │   └── tools/
 │       └── build_db.py       # 按规则重建数据库（CLI）
+├── tools/
+│   └── check_docs.py         # README / docs 链接与锚点检查
 └── tests/
     ├── test_*.py             # 与模块对应的测试（16 个文件）
     ├── test.py               # 手动计时脚本（勿作为正式测试）
@@ -228,14 +236,31 @@ with Converter(Config(database="mine.db")) as conv:
 
 ## 8. 发版与 CI/CD
 
-- **CI**（`CI.yml`）：PR 到 `main` 时触发（`docs/**`、`README.md` 变更不触发）；矩阵 3 OS × Python 3.9–3.13；`uv sync --frozen --all-extras` 后跑 flake8（硬错误 + 警告）与 pytest。
+- **CI**（`CI.yml`）：PR 到 `main` 时触发（`docs/**`、`README.md` 变更不触发）；矩阵 3 OS × Python 3.9–3.13；`uv sync --frozen --all-extras` 后跑 flake8、文档链接检查、Pyright 与 pytest。
 - **CD**（`CD.yml`）：PR 合并到 `main` 时触发；`uv build` 后发布 PyPI（可信发布，`skip-existing: true`），并创建 GitHub Release。
-- CD 用 **PR 分支名**作为版本号（tag `v<分支名>`）。发布分支请直接以版本号命名（如 `2.0.0`），不要用 `dev/2.0.0-alpha` 这类带 `/` 的名字，否则 tag 不合法。
-- **发版清单**：
-  1. 新建分支，分支名 = 新版本号；
-  2. 更新 `pyproject.toml` 的 `version`；
-  3. 在 `docs/CHANGELOG.md` 顶部新增版本条目（日期 + 改动列表），必要时同步 README；
-  4. 开 PR 到 `main` 并合并 → CD 自动发布。
+
+### 8.1 分支命名（重要）
+
+CD 会把 **PR 的 head 分支名原样**当作 release 标题和 tag：`tag_name = v<分支名>`。因此：
+
+- **准备合并到 `main` 的分支，分支名必须就是版本号**，例如 `2.0.0`、`2.0.1`；不要加 `dev/`、`feat/`、`fix/` 等前缀，不要包含 `/`，也不要带 `v` 前缀（tag 会自动加 `v`，否则会变成 `vv2.0.0`）。
+- 反例：`dev/2.0.0-alpha` 会生成 release 标题 `dev/2.0.0-alpha` 和 tag `vdev/2.0.0-alpha`。
+- 分支名必须与 `pyproject.toml` 的 `version`、`docs/CHANGELOG.md` 顶部条目的版本一致。
+- 纯文档分支（只改 `docs/**` / `README.md`）不会触发 CD，可以用描述性名字；但一旦包含代码改动并准备合并到 `main`，就应改成版本号。
+- 已经用错名字时，合并前用 `git branch -m 2.0.0` 重命名；如果远程已有旧分支，再按需推送新分支、删除旧分支。
+
+**Agent 行为要求**：在新建分支（`git switch -c` / `git checkout -b`）之前，必须提醒用户：
+
+> CD 会把分支名直接当作版本号和 tag；请确认分支名是不带前缀、不带 `/` 的版本号（例如 `2.0.0`），否则 release 标题和 tag 会出错。
+
+如果用户给出的分支名不是合法版本号（例如 `dev/...`、`feat/...`、`fix/...`），不要直接创建；先指出风险，请用户确认或改名。临时分支也应在开 PR 前改成版本号。
+
+### 8.2 发版清单
+
+1. 新建分支，分支名 = 新版本号（见 8.1）；
+2. 更新 `pyproject.toml` 的 `version`；
+3. 在 `docs/CHANGELOG.md` 顶部新增版本条目（日期 + 改动列表），必要时同步 README；
+4. 开 PR 到 `main` 并合并 → CD 自动发布。
 
 ## 9. 注意事项与陷阱
 
