@@ -2,10 +2,10 @@
 
 ## 2.0.0
 
-2026/11/26
+2026/11/27
 
 > [!NOTE]
-> 1.0版用户敬请查看：[迁移指南]()。
+> 1.0版用户敬请查看：[迁移指南](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/usage.md#4-从-10-迁移)。
 
 - ⚠️ 包结构重组为 `api` / `chars` / `segments` / `settings` / `db` / `phonology` /
   `pipeline` / `tablegen` / `tools`；1.0 的 `core`、`*_process`、

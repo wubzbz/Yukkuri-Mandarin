@@ -9,7 +9,6 @@
 - [拼音转换](#2-拼音转换)
 - [批量转换与性能](#3-批量转换与性能)
 - [从 1.0 迁移](#4-从-10-迁移)
-- [已知限制](#5-已知限制)
 
 > [!IMPORTANT]
 > 油库里普通话的 PyPI 项目名是 `yukkuri-mandarin`，在 `pip install` 时请使用这个名称；
@@ -75,20 +74,20 @@ print(f"#>{result}") # 使用f-字符串为伪日本语的开头添加#>
 #### 四、在[VoiceVox](https://voicevox.hiroshiba.jp/)中使用
 
 > [!NOTE]
-> 此特性有可能在1.1版实装。
+> 此特性我也不知道啥时候实装。
 
 基本思路：根据分词确定断/合，五度标记法构造声调。
 
 TODO:
 
-- [] 移除音声记号、片假名注音（最易）
-- [] 声调-音高映射
-- [] 无声化、重音核
-- [] 声韵长度、抑扬、其他参数
+- [ ] 移除音声记号、片假名注音（最易）
+- [ ] 声调-音高映射
+- [ ] 无声化、重音核
+- [ ] 声韵长度、抑扬、其他参数
 
 #### 五、注意事项
 
-- 如果您使用上述语音生成软件以外的生成工具，请确认其是否支持[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md/#3-什么是音声记号)。如果不支持，可以设置`text_convert()`的参数`without_accent`为`True`，以获得不含音声记号的结果。
+- 如果您使用上述语音生成软件以外的生成工具，请确认其是否支持[音声记号](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md#3-什么是音声记号)。如果不支持，可以设置`text_convert()`的参数`without_accent`为`True`，以获得不含音声记号的结果。
 - 如果您使用的语音生成工具对音声记号的定义与本项目采用的不一致，您可以选择[自建拼音数据库](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/database-mngr.md)。
 - 有时候会出现无法生成语音的情况。请首先检查生成的“伪日本语”中是否包含语音转换工具不支持的字符。例如，一些终端在输出结果时，会自动为行末的半角字符位补一个**空格**以满足行宽。如果您采用复制终端输出的方法，请检查是否包含这种多余的空格。考虑到这种情况，更建议您采用将结果输出到文件中再复制的方式。
 
@@ -330,8 +329,10 @@ print(pinyin_convert("ni3 hao3", config=config))
 
 ## 3. 批量转换与性能
 
-- 顶层 `text_convert()` / `pinyin_convert()` 每次调用都会新建一个 `Converter`：数据库连接会重新打开，但默认 jieba 分词器是进程内单例，不会重复加载词典。
-- 批量处理时建议复用 `Converter`：
+jieba 分词器首次加载词典会消耗 0.3 ~ 0.5 秒左右。默认的 jieba 分词器是进程内单例，不会重复加载词典。如果您使用自定义分词器，尽量保持进程内复用即可。
+
+顶层 `text_convert()` / `pinyin_convert()` 每次调用都会新建一个 `Converter`，数据库连接会重新打开，在处理数量大的时候可能造成一定的性能损耗。
+因此，批量处理时建议复用 `Converter`：
 
   ```python
   from yukkurimandarin import Converter
@@ -340,27 +341,14 @@ print(pinyin_convert("ni3 hao3", config=config))
       results = [conv.text_convert(line) for line in lines]
   ```
 
-- 如果输入没有汉字段，转换会直接跳过 jieba 和数据库，只处理非汉字。
-
 ## 4. 从 1.0 迁移
+
+API 变化速查表：
 
 | 1.0 | 2.0 |
 |---|---|
 | `text_convert(..., pinyin_database=dm)` | `text_convert(..., config=Config(database=path))` |
 | `text_convert(..., non_hanzi_config=modes)` | `text_convert(..., config=Config(non_hanzi=modes))` |
-| `DatabaseManager` | `PinyinRepository`（见[数据库管理](database-mngr.md)） |
-| `core.divide` / `core.combine` | `segments.Document` / `Run` / `Syllable` |
-| `*_process` 模块 | `pipeline/normalize.py`、`pipeline/hanzi.py`、`pipeline/non_hanzi.py`、`pipeline/assemble.py` |
-| `generate_gana` / `generate_table` | `tablegen/render.py` / `tablegen/table.py` |
-| `apply_third_tone` 等 | `phonology/sandhi.py` |
+| `DatabaseManager` | `PinyinRepository`（见[数据库管理](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/database-mngr.md)） |
 
 完整的旧版文档保存在 [archive/1.0/](archive/1.0/)。
-
-## 5. 已知限制
-
-- 连续上声使用机械的 2+1 分组（`我很好` 会得到 `2+2+3`，而非正确的 `1+2`）。
-- `一楼` 这类序数/数量歧义默认按数量词读去声。
-- `V-一-V` 用数词/量词表做启发式排除，名词重叠等边缘情况仍可能误判。
-- `动词 + 一 + 量词`（看一眼、等一下）未读轻声。
-- jieba 只参与多音字消歧，不参与上声变调分组。
-- 汉字识别范围是基本区 `U+4E00–U+9FFF`，扩展 A 区暂不识别。

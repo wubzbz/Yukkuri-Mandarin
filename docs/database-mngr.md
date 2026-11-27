@@ -5,9 +5,9 @@
 
 ## 0. 开始之前
 
-本包内置了一个默认数据库，它是基于一定的[规则](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md)和作者的喜好制定的。**内置库只能读取，不能修改。**（允许用户直接修改包的内容不是一个好做法） 
+本包内置了一个默认数据库，它是基于一定的[规则](https://github.com/wubzbz/Yukkuri-Mandarin/blob/main/docs/phonology.md)和作者的喜好制定的。**内置库只能读取，不能修改。**（允许用户直接修改包的内容通常不是一个好做法）
 
-因此，如果您发现内置数据库有错误，请提交 Issue，我们一起看看是不是这样。如果您只是对我的方案不满意，想改发音，完全可以建立属于您的自定义数据库。
+因此，如果您发现内置数据库有**错误**，请提交 Issue，我们一起看看是不是这样。如果您只是对我的方案不满意，想改发音，完全可以建立属于您的自定义数据库。
 
 **一行数据**（有时我们也说“一条记录”, Entry）指的是**一个字在一种上下文里的读法。** 同一个字在不同词里可能对应多行数据（后面会详细解释）。
 
@@ -21,7 +21,7 @@
 |---|---|---|
 | 拼音 | 这个字的拼音，不带声调 | `shang` |
 | 声调 | 三个数字，表示前、本、后的声调 | `043` |
-| 假名 | 这个字要念成的假名（可以带音声记号） | `さ'ん` |
+| 假名 | 这个字要念成的假名（可以带音声记号） | `さ'あん` |
 
 ### 声调为什么是三个数字
 
@@ -48,16 +48,16 @@
 |---|---|---|---|---|---|
 | 海 | hai | 4 | 3 | 2 | `432` |
 
-所以，**同一个字在不同上下文里，可能对应不同的行**。改之前先确认自己改的是哪种情况。
+所以，**同一个字在不同上下文里，可能对应不同的行**。改之前先确认您想改的是哪种情况。
 
 > [!NOTE]
-> 声调填的是**实际读出来的调**。比如“您好”的“您”会变调读成 ní，所以给“您”用的声调不是 `033`，而是 `023`。不确定时，先按下一节的方法 `get` 出来看看。
+> 声调填的是**实际读出来的调**。比如“你好”的“你”会变调读成 ní，所以给这里的“你”字用的声调不是 `033`，而是 `023`。不确定时，可以先按下一节的方法 `get` 出来看看。
 
 ## 2. 改一个字的发音
 
 ### 第一步：复制内置库
 
-新建一个 Python 文件（例如 `change.py`），保存下面的代码并运行（`python change.py`，或在 IDE/Jupyter 里直接运行）：
+新建一个 Python 文件（例如 `change.py`），保存下面的代码并运行：
 
 ```python
 import shutil
@@ -85,10 +85,10 @@ with PinyinRepository.open("my_database.db") as repo:
 应该能看到类似：
 
 ```text
-PinyinEntry(yinjie='shang', tone='043', hiragana='さ'ん')
+PinyinEntry(yinjie='shang', tone='043', hiragana="さ'あん")
 ```
 
-如果打印的是 `None`，说明拼音或声调写错了。
+如果打印的是 `None`，说明没有找到对应条目，可能拼音或声调写错了。
 
 也可以一次性列出这个拼音的所有行，再挑出您需要的。只需省略声调参数：
 
@@ -119,7 +119,8 @@ from yukkurimandarin import Config, text_convert
 
 # 先在配置中指定数据库路径：
 config = Config(database="my_database.db")
-print(text_convert("银行", config=config))
+
+print(text_convert("上海", config=config))
 ```
 
 输出应该变成了：
@@ -147,7 +148,10 @@ with PinyinRepository.open() as repo:   # 不传路径 = 内置库，只读
     write_table(repo.iter_all(), "all.csv")
 ```
 
-这会生成一个 `all.csv`，里面是内置库的全部数据。文件比较大，用 Excel 打开可能会慢，建议直接用支持 CSV 的编辑器。
+这会生成一个 `all.csv`，里面是内置库的全部数据。
+
+> [!NOTE]
+> 假如您安装了可选依赖 `openpyxl`，您可以导出为 `.xlsx` 文档，然后在 Excel 中处理。
 
 ### 修改
 
@@ -169,7 +173,10 @@ entries = read_table("all.csv")
 PinyinRepository.create("my_database.db", entries, overwrite=True)
 ```
 
-`overwrite=True` 表示如果 `my_database.db` 已存在就覆盖它。
+`overwrite=True` 表示如果 `my_database.db` 已存在就覆盖它。如果担心误修改已存在的文件，请将其设置为 `False`。
+
+> [!NOTE]
+> 假如您安装了可选依赖 `openpyxl`，您可以从 `.xlsx` 文档中读取数据。
 
 ### 只把改动的几行合并进现有库
 
