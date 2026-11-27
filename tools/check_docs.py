@@ -133,8 +133,21 @@ def iter_documents() -> Iterable[Path]:
             yield path
 
 
+def configure_console() -> None:
+    """在非 UTF-8 控制台（如 Windows CI）上避免中文输出崩溃。"""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
+
+
 def main() -> int:
     """执行检查；发现问题时返回 1。"""
+    configure_console()
     anchor_cache: Dict[Path, Set[str]] = {}
     errors: List[str] = []
     documents = list(iter_documents())
