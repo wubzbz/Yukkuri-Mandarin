@@ -47,8 +47,17 @@ module-root = ""
 dev = [
     "pytest>=8.4.1",
     "flake8>=7.0.0",
+    "pyright>=1.1.414",
 ]
 
 [tool.pytest.ini_options]
 pythonpath = "."
 testpaths = "tests"
+
+[tool.pyright]
+include = ["yukkurimandarin", "tests"]
+exclude = ["**/__pycache__", "**/build", "**/dist"]
+pythonVersion = "3.9"
+typeCheckingMode = "basic"
+venvPath = "."
+venv = ".venv"
