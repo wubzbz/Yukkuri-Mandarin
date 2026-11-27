@@ -32,12 +32,16 @@ def convert_run(
     if config is None:
         config = default_config()
     if kind == "punctuation":
-        return _apply_mode(text, config.pc_mode, config.pc_replace)
+        mode, replace = config.pc
+        return _apply_mode(text, mode, replace)
     if kind == "gana":
-        return _apply_mode(text, config.ja_mode, config.ja_replace)
+        mode, replace = config.ja
+        return _apply_mode(text, mode, replace)
     if kind == "latin":
-        return _apply_mode(text, config.en_mode, config.en_replace)
-    return _apply_mode(text, config.other_mode, config.other_replace)
+        mode, replace = config.en
+        return _apply_mode(text, mode, replace)
+    mode, replace = config.other
+    return _apply_mode(text, mode, replace)
 
 
 def default_config() -> "NonHanziModes":

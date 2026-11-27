@@ -57,6 +57,34 @@ class NonHanziModes:
             if getattr(self, replace_attr) is None:
                 object.__setattr__(self, replace_attr, self.global_replace)
 
+    @property
+    def en(self) -> "tuple[Mode, str]":
+        """英文片段的处理模式与替换文本（已回落到全局值）。"""
+        assert self.en_mode is not None
+        assert self.en_replace is not None
+        return self.en_mode, self.en_replace
+
+    @property
+    def ja(self) -> "tuple[Mode, str]":
+        """日语假名片段的处理模式与替换文本（已回落到全局值）。"""
+        assert self.ja_mode is not None
+        assert self.ja_replace is not None
+        return self.ja_mode, self.ja_replace
+
+    @property
+    def pc(self) -> "tuple[Mode, str]":
+        """标点片段的处理模式与替换文本（已回落到全局值）。"""
+        assert self.pc_mode is not None
+        assert self.pc_replace is not None
+        return self.pc_mode, self.pc_replace
+
+    @property
+    def other(self) -> "tuple[Mode, str]":
+        """其他字符片段的处理模式与替换文本（已回落到全局值）。"""
+        assert self.other_mode is not None
+        assert self.other_replace is not None
+        return self.other_mode, self.other_replace
+
 
 @dataclass(frozen=True)
 class Config:

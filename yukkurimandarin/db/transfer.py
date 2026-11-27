@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import csv
 from pathlib import Path
-from typing import Any, Iterable, List, Union
+from typing import Any, Iterable, List, Optional, Sequence, Union
 
 from ..formats import CSV_HEADERS
 from .errors import MissingDependencyError, TransferError
@@ -149,7 +149,7 @@ def _load_openpyxl() -> Any:
     return openpyxl
 
 
-def _check_header(header: object) -> None:
+def _check_header(header: Optional[Sequence[object]]) -> None:
     """校验表头。"""
     actual = tuple(header or ())
     if actual not in _ACCEPTED_HEADERS:

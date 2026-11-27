@@ -4,10 +4,13 @@ from __future__ import annotations
 
 try:
     from importlib.metadata import PackageNotFoundError, version
-
-    __version__ = version("yukkuri-mandarin")
-except (ImportError, PackageNotFoundError):
+except ImportError:
     __version__ = "dev"
+else:
+    try:
+        __version__ = version("yukkuri-mandarin")
+    except PackageNotFoundError:
+        __version__ = "dev"
 
 from .api import Converter, pinyin_convert, text_convert
 from .db import PinyinEntry, PinyinRepository

@@ -80,7 +80,9 @@ def test_iter_all(db_path):
 def test_upsert(db_path):
     with PinyinRepository.open(db_path) as repo:
         repo.upsert(PinyinEntry("ni", "121", "にー"))
-        assert repo.get("ni", "121").hiragana == "にー"
+        entry = repo.get("ni", "121")
+        assert entry is not None
+        assert entry.hiragana == "にー"
         repo.upsert(PinyinEntry("ni", "141", "に/い"))
         assert repo.count() == 4
 
@@ -92,7 +94,9 @@ def test_upsert_many(db_path):
             PinyinEntry("ni", "121", "にー"),
         ])
         assert count == 2
-        assert repo.get("ni", "121").hiragana == "にー"
+        entry = repo.get("ni", "121")
+        assert entry is not None
+        assert entry.hiragana == "にー"
         assert repo.get("a", "010") is not None
 
 
@@ -167,7 +171,7 @@ def test_search_invalid_pattern(db_path):
     with PinyinRepository.open(db_path, readonly=True) as repo:
         for pattern in ("12", "1x1", "102", 123):
             with pytest.raises(ValueError):
-                repo.search("ni", pattern)
+                repo.search("ni", pattern)  # type: ignore[arg-type]
 
 
 def test_is_bundled_path(db_path):

@@ -69,7 +69,7 @@ def test_fill_kana_length_mismatch():
 
     doc = fill_pinyin(Document.from_text("你好"))
     with pytest.raises(ValueError, match="批量查询结果数量不一致"):
-        fill_kana(doc, ShortRepository())
+        fill_kana(doc, ShortRepository())  # type: ignore[arg-type]
 
 
 def test_fill_pinyin_length_mismatch(monkeypatch):
